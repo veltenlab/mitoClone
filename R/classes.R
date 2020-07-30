@@ -6,15 +6,22 @@
 #'
 #'@slot M A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.
 #'@slot N A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.
-#'@ternary Discretized version describing the mutational status of each gene in each cell, where 1 signfiies mutant, 0 signifies reference, and ? signifies dropout
-#'@cluster Boolean vector of length \code{ncol(M)} specifying if the given mutation should be included for clustering (\code{TRUE}) or only used for annotation.
+#'@slot ternary Discretized version describing the mutational status of each gene in each cell, where 1 signfiies mutant, 0 signifies reference, and ? signifies dropout
+#'@slot cluster Boolean vector of length \code{ncol(M)} specifying if the given mutation should be included for clustering (\code{TRUE}) or only used for annotation.
+#'@slot metadata Metadata frame for annotation of single cells (used for plotting). Row names should be the same as in \code{M}
+#'@slot tree Inferred mutation tree
+#'@slot cell2clone Probability matrix of single cells and their assignment to clones.
+#'@export
 mutationCalls <- setClass(
   "mutationCalls",
   slots = c(
     M = "matrix",
     N = "matrix",
+    metadata = "data.frame",
     ternary = "matrix",
-    cluster = "logical"
+    cluster = "logical",
+    tree= "list",
+    cell2clone = "matrix"
   ),
   validity = function(object) {
     if (!identical(dim(object@M), dim(object@N))) {
@@ -32,8 +39,9 @@ mutationCalls <- setClass(
 #'@param cluster If \code{NULL}, only mutations with coverage in 20% of the cells or more will be used for the clustering, and all other mutations will be used for cluster annotation only. Alternatively, a boolean vector of length \code{ncol(M)} that specifies the desired behavior for each genomic site.
 #'@param binarize A function that turns M and N into a ternary matrix of mutation calls in single cells, where where -1 signfiies reference, 0 signifies dropout, and 1 signifies wild-type. The default was found to work well on mitochondrial data.
 #'@return An object of class \code{\link{mutationCalls}}.
-mutationCallsFromMatrix <- function(M, N, cluster=NULL, binarize = function(M,N) {alleleRatio <- M/(M+N); apply(alleleRatio, 2, function(x) ifelse(is.na(x),"?", ifelse(x>0.05,"1","0")))}) {
-  out <- new("mutationCalls", M=M, N=N, ternary=binarize(M,N))
+#'@export
+mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = NULL, binarize = function(M,N) {alleleRatio <- M/(M+N); apply(alleleRatio, 2, function(x) ifelse(is.na(x),"?", ifelse(x>0.05,"1","0")))}) {
+  out <- new("mutationCalls", M=M, N=N, metadata = metadata, ternary=binarize(M,N))
 
   if (!is.null(cluster)) out@cluster <- cluster else {
     out@cluster <- apply(out@ternary!=0, 2, mean) > 0.2
@@ -41,3 +49,40 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, binarize = function(M,N)
   out
 }
 
+#'Plot clonal assignment
+#'
+#'Creates a heatmap of single cell mutation calls, clustered using PhISCS.
+#'@param mutcalls object of class \code{\link{mutationCalls}}.
+#'@param what One of the following:
+#'\itemize{
+#'\item \emph{alleleRatio}: The fraction of reads mapping to the mutant allele
+#'\item \emph{ternary}: Ternarized mutation status
+#'}
+#'@param ... any arguments passed to \code{\link{pheatmap::pheatmap}}
+#'@export
+plotClones <- function(mutcalls, what = "alleleRatio", ...) {
+  if (what == "alleleRatio") plotData <- mutcalls@M / (mutcalls@M + mutcalls@N)
+  if (what == "ternary") plotData <- apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="?", 0, -1)))
+  plotdata <- t(plotdata[,getNodes(mutcalls@tree)[-1] ]) #how to order rows?
+  annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@ternary[,!mutcalls@cluster],
+                      mutcalls@metadata)
+  pheatmap(plotdata, cluster_cols = F, cluster_rows = F, show_colnames = F,
+           color = colorRampPalette(rev(c("#9B0000","#FFD72E","#FFD72E","#00009B")))(100),
+           annotation_col = annos, ...)
+
+}
+
+
+#'Plot clonal tree
+#'
+#'Uses graphviz to plot the clonal tree
+#'@param mutcalls object of class \code{\link{mutationCalls}}.
+#'@param file file name of postscript output file
+#'@export
+plotTree <- function(mutcalls, file = "mytree.ps") {
+  gv <- toGraphviz(mutcalls@tree)
+  tmp <- tempfile()
+  writeLines(gv, con = tmp)
+  system(sprintf("dot -Tps %s > %s", tmp, file),wait = T)
+  file.remove(tmp)
+}
