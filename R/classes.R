@@ -61,7 +61,7 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(ro
 #'Creates a heatmap of single cell mutation calls, clustered using PhISCS.
 #'@param mutcalls object of class \code{\link{mutationCalls}}.
 #'@param what One of the following: \emph{alleleRatio}: The fraction of reads mapping to the mutant allele or \emph{ternary}: Ternarized mutation status
-#'}
+#'
 #'@param ... any arguments passed to \code{\link{pheatmap::pheatmap}}
 #'@export
 plotClones <- function(mutcalls, what = "alleleRatio", ...) {
