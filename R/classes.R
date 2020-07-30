@@ -11,7 +11,8 @@
 #'@slot metadata Metadata frame for annotation of single cells (used for plotting). Row names should be the same as in \code{M}
 #'@slot tree Inferred mutation tree
 #'@slot cell2clone Probability matrix of single cells and their assignment to clones.
-#'@slot mainClone Main clone of each cell
+#'@slot mut2clone Maps mutations to main clones
+#'@slot mainClone Probability matrix of single cells and their assignment to main clones
 #'@slot treeLikelihoods Likelihood matrix underlying the inference of main clones, see \code{\link{setMainClone}}
 #'@export
 mutationCalls <- setClass(
@@ -24,6 +25,7 @@ mutationCalls <- setClass(
     cluster = "logical",
     tree= "list",
     cell2clone = "matrix",
+    mut2clone = "integer",
     mainClone = "integer",
     treeLikelihoods = "matrix"
 
@@ -71,7 +73,11 @@ plotClones <- function(mutcalls, what = "alleleRatio", ...) {
   plotData <- t(plotData[,mutcalls@cell2clone ]) #how to order rows?
   annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@ternary[,!mutcalls@cluster],
                       mutcalls@metadata)
-  if (length(mutcalls@mainClone) > 0) annos$mainClone <- mutcalls@mainClone
+  if (length(mutcalls@mut2clone) > 0) {
+    annos$mainClone <- apply(mutcalls@mainClone, 1, which.max)
+    annos$confidence <- apply(mutcalls@mainClone, 1, max)
+  }
+
   pheatmap::pheatmap(plotData, cluster_cols = F, cluster_rows = F, show_colnames = F,
            color = colorRampPalette(rev(c("#9B0000","#FFD72E","#FFD72E","#00009B")))(100),
            annotation_col = annos, ...)

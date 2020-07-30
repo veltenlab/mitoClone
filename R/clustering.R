@@ -100,6 +100,9 @@ clusterMetaclones <- function(mutcalls, nclust = 3) {
                      clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihood)),
                      clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihood))),
                      cutree_cols = nclust)
-  mutcalls@mainClone <- cutree(grouped$tree_col, k=nclust)
+  mutcalls@mut2clone <- cutree(grouped$tree_col, k=nclust)
+  mutcalls@mainClone <- sapply(unique(mutcalls@mut2clone), function(mainClone) {
+    apply(mutcalls@cell2clone[,mutcalls@mut2clone == mainClone], 1, sum)
+  })
   mutcalls
 }
