@@ -36,7 +36,7 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
   #read in the result and create tree data structure
   physics <- read.table(file.path(tempfolder, "out","in.CFMatrix"),header=T, row.names = 1)
   txtCon <- textConnection(unique(apply(physics, 1, paste, collapse = ",")))
-  clones <- as.matrix(read.csv(txtCon, header=F , col.names = colnames(physics)))
+  clones <- read.csv(txtCon, header=F , col.names = colnames(physics))
   mutcalls@tree <- clones2tree(clones)
 
   nodes.order <- getNodes(mutcalls@tree)[-1]
@@ -46,6 +46,8 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
   clone.names <- apply(clones[,nodes.order],1,function(x) max(which(x==1)))
   clone.names <- nodes.order[clone.names]
   clone.names[is.na(clone.names)] <- "root"
+
+  clones <- as.matrix(clones)
   clone.names -> rownames(clones)
 
   cell2clone.prob <- apply(usedata[,nodes.order],1, function(cell) {
