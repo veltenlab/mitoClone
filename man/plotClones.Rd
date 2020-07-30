@@ -9,12 +9,6 @@ plotClones(mutcalls, what = "alleleRatio", ...)
 \arguments{
 \item{mutcalls}{object of class \code{\link{mutationCalls}}.}
 
-\item{what}{One of the following:
-\itemize{
-\item \emph{alleleRatio}: The fraction of reads mapping to the mutant allele
-\item \emph{ternary}: Ternarized mutation status
-}}
-
 \item{...}{any arguments passed to \code{\link{pheatmap::pheatmap}}}
 }
 \description{

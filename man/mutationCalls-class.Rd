@@ -27,7 +27,9 @@ To create this class if you already have the matrices of mutation counts, use it
 
 \item{\code{cell2clone}}{Probability matrix of single cells and their assignment to clones.}
 
-\item{\code{mainClone}}{Main clone of each cell}
+\item{\code{mut2clone}}{Maps mutations to main clones}
+
+\item{\code{mainClone}}{Probability matrix of single cells and their assignment to main clones}
 
 \item{\code{treeLikelihoods}}{Likelihood matrix underlying the inference of main clones, see \code{\link{setMainClone}}}
 }}
