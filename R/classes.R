@@ -40,11 +40,11 @@ mutationCalls <- setClass(
 #'@param binarize A function that turns M and N into a ternary matrix of mutation calls in single cells, where where -1 signfiies reference, 0 signifies dropout, and 1 signifies wild-type. The default was found to work well on mitochondrial data.
 #'@return An object of class \code{\link{mutationCalls}}.
 #'@export
-mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = NULL, binarize = function(M,N) {alleleRatio <- M/(M+N); apply(alleleRatio, 2, function(x) ifelse(is.na(x),"?", ifelse(x>0.05,"1","0")))}) {
+mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(row.names = rownames(M)), binarize = function(M,N) {alleleRatio <- M/(M+N); apply(alleleRatio, 2, function(x) ifelse(is.na(x),"?", ifelse(x>0.05,"1","0")))}) {
   out <- new("mutationCalls", M=M, N=N, metadata = metadata, ternary=binarize(M,N))
 
   if (!is.null(cluster)) out@cluster <- cluster else {
-    out@cluster <- apply(out@ternary!=0, 2, mean) > 0.2
+    out@cluster <- apply(out@ternary!="?", 2, mean) > 0.2
   }
   out
 }
@@ -63,10 +63,10 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = NULL, binariz
 plotClones <- function(mutcalls, what = "alleleRatio", ...) {
   if (what == "alleleRatio") plotData <- mutcalls@M / (mutcalls@M + mutcalls@N)
   if (what == "ternary") plotData <- apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="?", 0, -1)))
-  plotdata <- t(plotdata[,getNodes(mutcalls@tree)[-1] ]) #how to order rows?
+  plotData <- t(plotData[,getNodes(mutcalls@tree)[-1] ]) #how to order rows?
   annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@ternary[,!mutcalls@cluster],
                       mutcalls@metadata)
-  pheatmap(plotdata, cluster_cols = F, cluster_rows = F, show_colnames = F,
+  pheatmap(plotData, cluster_cols = F, cluster_rows = F, show_colnames = F,
            color = colorRampPalette(rev(c("#9B0000","#FFD72E","#FFD72E","#00009B")))(100),
            annotation_col = annos, ...)
 
