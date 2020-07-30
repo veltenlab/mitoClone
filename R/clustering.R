@@ -16,7 +16,7 @@
 #'@export
 muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, time =10000, tempfolder = tempdir(), python_env = "") {
   write.table(mutcalls@ternary, file = file.path(tempfolder,"in.txt"), quote = F, sep="\t",
-              row.names = gsub("[><_]","",rownames(forphiscs)),col.names = gsub("[><_]","",colnames(forphiscs)))
+              row.names = gsub("[><_]","",rownames(mutcalls@ternary)),col.names = gsub("[><_]","",colnames(mutcalls@ternary)))
 
 
   base <- system.file("extdata/python/PhISCS-I",package = "mitoseq")
