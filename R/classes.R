@@ -44,7 +44,7 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(ro
   out <- new("mutationCalls", M=M, N=N, metadata = metadata, ternary=binarize(M,N))
 
   if (!is.null(cluster)) out@cluster <- cluster else {
-    out@cluster <- apply(out@ternary!="?", 2, mean) > 0.2
+    out@cluster <- apply(out@ternary!="?", 2, mean) > 0.2 & apply(out@ternary=="1", 2, mean) > 0.04 #the last filter was not used when I made the figure, there was a filter on the allele freq. in RNA. Should maybe include this in the other routines? But this works as well
   }
   out
 }
