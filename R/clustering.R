@@ -97,8 +97,8 @@ clusterMetaclones <- function(mutcalls, nclust = 3) {
   #determine clustering
 
   grouped <- pheatmap::pheatmap(mutcalls@treeLikelihoods,
-                     clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihood)),
-                     clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihood))),
+                     clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihoods)),
+                     clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihoods))),
                      cutree_cols = nclust)
   mutcalls@mut2clone <- cutree(grouped$tree_col, k=nclust)
   mutcalls@mainClone <- sapply(unique(mutcalls@mut2clone), function(mainClone) {

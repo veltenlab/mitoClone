@@ -67,7 +67,7 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(ro
 plotClones <- function(mutcalls, what = "alleleRatio", ...) {
   if (what == "alleleRatio") plotData <- mutcalls@M / (mutcalls@M + mutcalls@N)
   if (what == "ternary") plotData <- apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="?", 0, -1)))
-  plotData <- t(plotData[,mutcalls@cell2clone ]) #how to order rows?
+  plotData <- t(plotData[,getNodes(mutcalls@tree)[-1]]) #how to order rows?
   annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@ternary[,!mutcalls@cluster],
                       mutcalls@metadata)
   if (length(mutcalls@mut2clone) > 0) {
