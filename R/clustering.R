@@ -1,9 +1,7 @@
 #'Clustering of single cells by mutation status
 #'
-#'From data on the observed mutational status of single cells at a number of genomic sites, performs the following analysis:
-#'a) Computes a likely phylogenetic tree using PhISCS (https://github.com/sfu-compbio/PhISCS)
-#'b) Groups mutations in clusters using a likelihood based approach
-#'c) Associates single cells with the clusters and computes a likelihood score
+#'From data on the observed mutational status of single cells at a number of genomic sites, computes a likely phylogenetic tree using PhISCS (https://github.com/sfu-compbio/PhISCS) and associates single cells with leaves of the tree.
+#'The function \code{\link{clusterMetaclones}} should be called on the output in order to group mutations into clones using a likelihood-based approach.
 #'@param mutcalls object of class \code{\link{mutationCalls}}.
 #'@param fn false negative rate, i.e. the probability of only observing the reference allele if there is a mutation. #add gene-wise
 #'@param fp false positive, i.e. the probability of observing the mutant allele if there is no mutation.
@@ -12,7 +10,7 @@
 #'@param time maximum time to be used for PhISCS optimization, in seconds (defaults to 10000)
 #'@param tempfolder temporary folder to use for PhISCS output
 #'@param python_env Any shell commands to execute in order to make the gurobi python package availabler, such as \code{source activate myenv}
-#'@return Tbd
+#'@return an object of class \code{\link{mutationCalls}}, with an inferred tree structure and cell to clone assignment added.
 #'@export
 muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, time =10000, tempfolder = tempdir(), python_env = "") {
 
@@ -62,7 +60,46 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
       10^x / sum(10^x)
     }))
 
+
+    #finally, determine which mutations to group:
+    evaluate_likelihood <- function(data, idealized) {
+      sum(log10(ifelse(data == "0" & idealized == 1, fn,
+                       ifelse(data == "1" & idealized == 0, fp,
+                              ifelse(data == "?", 1, (1-fn) * (1-fp))))))
+    }
+
+    ref <- evaluate_likelihood(usedata, physics)
+    mutcalls@treeLikelihoods <- sapply(colnames(physics), function(node1) {
+      sapply(colnames(physics), function(node2) {
+        newmodel <- physics
+        newmodel[,node1] <- newmodel[,node2]
+        evaluate_likelihood(usedata, newmodel) - ref
+      })
+    })
+
+
+
     return(mutcalls)
 
 
+}
+
+
+
+#'Cluster mutations into clones
+#'
+#'PhISCS orders all mutations into a hierarchical mutational tree; in many cases, the exact order of the acquisition of individual mutations in not unanimously determined from the data. This function computes the change in likelihood of the infered clonal assignment if two mutations are merged into a clone. Hierarchical clustering is then used to determine the clonal structure. The result is visualized and should be fine-tuned using the \code{nclust} parameter.
+#'@param mutcalls mutcalls object of class \code{\link{mutationCalls}} for which \code{\link{muta_cluster}} has been run
+#'@param nclust number of metaclones expected
+#'
+#'@export
+clusterMetaclones <- function(mutcalls, nclust = 3) {
+  #determine clustering
+
+  grouped <- pheatmap::pheatmap(mutcalls@treeLikelihoods,
+                     clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihood)),
+                     clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihood))),
+                     cutree_cols = nclust)
+  mutcalls@mainClone <- cutree(grouped$tree_col, k=nclust)
+  mutcalls
 }

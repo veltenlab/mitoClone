@@ -11,6 +11,8 @@
 #'@slot metadata Metadata frame for annotation of single cells (used for plotting). Row names should be the same as in \code{M}
 #'@slot tree Inferred mutation tree
 #'@slot cell2clone Probability matrix of single cells and their assignment to clones.
+#'@slot mainClone Main clone of each cell
+#'@slot treeLikelihoods Likelihood matrix underlying the inference of main clones, see \code{\link{setMainClone}}
 #'@export
 mutationCalls <- setClass(
   "mutationCalls",
@@ -21,7 +23,10 @@ mutationCalls <- setClass(
     ternary = "matrix",
     cluster = "logical",
     tree= "list",
-    cell2clone = "matrix"
+    cell2clone = "matrix",
+    mainClone = "integer",
+    treeLikelihoods = "matrix"
+
   ),
   validity = function(object) {
     if (!identical(dim(object@M), dim(object@N))) {
@@ -49,7 +54,7 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(ro
   out
 }
 
-#'Plot clonal assignment
+#'Plot clonal assignment of single cells
 #'
 #'Creates a heatmap of single cell mutation calls, clustered using PhISCS.
 #'@param mutcalls object of class \code{\link{mutationCalls}}.
@@ -63,10 +68,11 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(ro
 plotClones <- function(mutcalls, what = "alleleRatio", ...) {
   if (what == "alleleRatio") plotData <- mutcalls@M / (mutcalls@M + mutcalls@N)
   if (what == "ternary") plotData <- apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="?", 0, -1)))
-  plotData <- t(plotData[,getNodes(mutcalls@tree)[-1] ]) #how to order rows?
+  plotData <- t(plotData[,mutcalls@cell2clone ]) #how to order rows?
   annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@ternary[,!mutcalls@cluster],
                       mutcalls@metadata)
-  pheatmap(plotData, cluster_cols = F, cluster_rows = F, show_colnames = F,
+  if (length(mutcalls@mainClone) > 0) annos$mainClone <- mutcalls@mainClone
+  pheatmap::pheatmap(plotData, cluster_cols = F, cluster_rows = F, show_colnames = F,
            color = colorRampPalette(rev(c("#9B0000","#FFD72E","#FFD72E","#00009B")))(100),
            annotation_col = annos, ...)
 
