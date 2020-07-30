@@ -6,7 +6,7 @@
 #'@return An object of class \code{\link{mutationCalls}}
 #'@export
 mutationCallsFromBamList <- function(bamfiles) {
-
+NULL
 }
 
 
@@ -19,5 +19,5 @@ mutationCallsFromBamList <- function(bamfiles) {
 #'@return An object of class \code{\link{mutationCalls}}
 #'@export
 mutationCallsFromSingleBam <- function(bam, tag = "XQ:C") {
-
+NULL
 }
