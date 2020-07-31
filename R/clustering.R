@@ -70,9 +70,9 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
 
     ref <- evaluate_likelihood(usedata, physics)
     mutcalls@treeLikelihoods <- sapply(colnames(physics), function(node1) {
-      sapply(colnames(physics), function(node2) {
+      sapply(c(colnames(physics),"root"), function(node2) {
         newmodel <- physics
-        newmodel[,node1] <- newmodel[,node2]
+        if (node2 == "root") newmodel[,node1] <- rep(0, ncol(newmodel)) else newmodel[,node1] <- newmodel[,node2]
         evaluate_likelihood(usedata, newmodel) - ref
       })
     })
@@ -103,6 +103,6 @@ clusterMetaclones <- function(mutcalls, nclust = 3) {
   mutcalls@mut2clone <- cutree(grouped$tree_col, k=nclust)
   mutcalls@mainClone <- sapply(unique(mutcalls@mut2clone), function(mainClone) {
     apply(mutcalls@cell2clone[,mutcalls@mut2clone == mainClone], 1, sum)
-  })
+  }) #there is a problem here because cell2clone does not have the exact same length a mut2clone (identical muts were already excluded)
   mutcalls
 }
