@@ -26,7 +26,7 @@ mutationCalls <- setClass(
     tree= "list",
     cell2clone = "matrix",
     mut2clone = "integer",
-    mainClone = "integer",
+    mainClone = "matrix",
     treeLikelihoods = "matrix"
 
   ),

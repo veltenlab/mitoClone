@@ -72,7 +72,7 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
     mutcalls@treeLikelihoods <- sapply(colnames(physics), function(node1) {
       sapply(c(colnames(physics),"root"), function(node2) {
         newmodel <- physics
-        if (node2 == "root") newmodel[,node1] <- rep(0, ncol(newmodel)) else newmodel[,node1] <- newmodel[,node2]
+        if (node2 == "root") newmodel[,node1] <- rep(0, nrow(newmodel)) else newmodel[,node1] <- newmodel[,node2]
         evaluate_likelihood(usedata, newmodel) - ref
       })
     })
@@ -99,10 +99,11 @@ clusterMetaclones <- function(mutcalls, nclust = 3) {
   grouped <- pheatmap::pheatmap(mutcalls@treeLikelihoods,
                      clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihoods)),
                      clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihoods))),
-                     cutree_cols = nclust)
-  mutcalls@mut2clone <- cutree(grouped$tree_col, k=nclust)
-  mutcalls@mainClone <- sapply(unique(mutcalls@mut2clone), function(mainClone) {
-    apply(mutcalls@cell2clone[,mutcalls@mut2clone == mainClone], 1, sum)
+                     cutree_rows = nclust)
+  mutcalls@mut2clone <- cutree(grouped$tree_row, k=nclust)
+  use <- mutcalls@mut2clone[colnames(mutcalls@cell2clone)]
+  mutcalls@mainClone <- sapply(unique(use), function(mainClone) {
+    apply(mutcalls@cell2clone[,use == mainClone], 1, sum)
   }) #there is a problem here because cell2clone does not have the exact same length a mut2clone (identical muts were already excluded)
   mutcalls
 }
