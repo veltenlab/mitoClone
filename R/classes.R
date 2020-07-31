@@ -51,7 +51,7 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(ro
   out <- new("mutationCalls", M=M, N=N, metadata = metadata, ternary=binarize(M,N))
 
   if (!is.null(cluster)) out@cluster <- cluster else {
-    out@cluster <- apply(out@ternary!="?", 2, mean) > 0.2 & apply(out@ternary=="1", 2, mean) > 0.04 #the last filter was not used when I made the figure, there was a filter on the allele freq. in RNA. Should maybe include this in the other routines? But this works as well
+    out@cluster <- apply(out@ternary!="?", 2, mean) > 0.2 #& apply(out@ternary=="1", 2, mean) > 0.04 #the last filter was not used when I made the figure, there was a filter on the allele freq. in RNA. Should maybe include this in the other routines? But this works as well
   }
   out
 }
@@ -71,8 +71,9 @@ plotClones <- function(mutcalls, what = "alleleRatio", ...) {
   annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@ternary[,!mutcalls@cluster],
                       mutcalls@metadata)
   if (length(mutcalls@mut2clone) > 0) {
-    annos$mainClone <- apply(mutcalls@mainClone, 1, which.max)
+    annos$mainClone <- as.factor(apply(mutcalls@mainClone, 1, which.max))
     annos$confidence <- apply(mutcalls@mainClone, 1, max)
+    plotData <- plotData[,order(annos$mainClone)]
   }
 
   pheatmap::pheatmap(plotData, cluster_cols = F, cluster_rows = F, show_colnames = F,
@@ -95,3 +96,21 @@ plotTree <- function(mutcalls, file = "mytree.ps") {
   system(sprintf("dot -Tps %s > %s", tmp, file),wait = T)
   file.remove(tmp)
 }
+
+
+#'mutationCalls accessors
+#'
+#'Retrieves the full matrix of likelihoods associating single cells with clones
+#'@param  mutcall object of class \code{\link{mutationCalls}}.
+#'@param mainClones Retrieve likelihoods associated with the main Clones. Defaults to \code{TRUE} if \code{\link{clusterMetaclones}} has been run.
+#'@export
+
+getCloneLikelihood <- function(mutcall, mainClones =length(mutcall@mut2clone) > 0)
+
+#' @describeIn getCloneLikelihood Retrieve the most likely clone associate with each cell.
+getMainClone <- function(mutcall, mainClones = length(mutcall@mut2clone) > 0) as.factor(apply(getCloneLikelihood(mutcall, mainClones = mainClones), 1, which.max))
+
+#' @describeIn getCloneLikelihood Retrieve the likelihood of the most likely clone for each cell.
+getConfidence <- function(mutcalls, mainClones = length(mutcall@mut2clone) > 0) as.factor(apply(getCloneLikelihood(mutcall, mainClones = mainClones), 1, max))
+
+
