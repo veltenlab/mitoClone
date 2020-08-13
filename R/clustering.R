@@ -32,7 +32,7 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
     message("Now running the following command:", command)
     tryCatch(system(command), error = function(e) stop("PhISCS error: ",e,"Make sure that the gurobi python package is available and consider specifying python_env."))
   } else {
-    message("Now running the following command:", command)
+    message("Results found, skipping PhISCS run")
   }
 
 
@@ -92,24 +92,81 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
 
 
 
-#'Cluster mutations into clones
+# clusterMetaclones <- function(mutcalls, nclust = 3) {
+#   #determine clustering
+#
+#   grouped <- pheatmap::pheatmap(mutcalls@treeLikelihoods,
+#                      clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihoods)),
+#                      clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihoods))),
+#                      cutree_rows = nclust)
+#   mutcalls@mut2clone <- cutree(grouped$tree_row, k=nclust)
+#   use <- mutcalls@mut2clone[colnames(mutcalls@cell2clone)]
+#   mutcalls@mainClone <- sapply(unique(use), function(mainClone) {
+#     apply(mutcalls@cell2clone[,use == mainClone], 1, sum)
+#   }) #there is a problem here because cell2clone does not have the exact same length a mut2clone (identical muts were already excluded)
+#   mutcalls
+# }
+
+#'Cluster mutations into clones - following the tree structure
 #'
-#'PhISCS orders all mutations into a hierarchical mutational tree; in many cases, the exact order of the acquisition of individual mutations in not unanimously determined from the data. This function computes the change in likelihood of the infered clonal assignment if two mutations are merged into a clone. Hierarchical clustering is then used to determine the clonal structure. The result is visualized and should be fine-tuned using the \code{nclust} parameter.
+#'PhISCS orders all mutations into a hierarchical mutational tree; in many cases, the exact order of the acquisition of individual mutations in not unanimously determined from the data. This function computes the change in likelihood of the infered clonal assignment if two mutations are merged into a clone. Hierarchical clustering is then used to determine the clonal structure. The result is visualized and should be fine-tuned using the \code{min.cor} parameter.
 #'@param mutcalls mutcalls object of class \code{\link{mutationCalls}} for which \code{\link{muta_cluster}} has been run
-#'@param nclust number of metaclones expected
+#'@param min.cor specifies the minimum correlation required
 #'
 #'@export
-clusterMetaclones <- function(mutcalls, nclust = 3) {
-  #determine clustering
+clusterMetaclones <- function(mutcalls, min.cor = 0.5) {
+  #split the tree into branches with no further splits
+  branches <- getBranches(mutcalls@tree)
+  mutcalls@mut2clone <- as.integer(rep(0, nrow(mutcalls@treeLikelihoods)))
+  names(mutcalls@mut2clone) <- rownames(mutcalls@treeLikelihoods)
 
-  grouped <- pheatmap::pheatmap(mutcalls@treeLikelihoods,
-                     clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihoods)),
-                     clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihoods))),
-                     cutree_rows = nclust)
-  mutcalls@mut2clone <- cutree(grouped$tree_row, k=nclust)
+  par(mfrow= c(ceiling(sqrt(length(branches))), ceiling(sqrt(length(branches)))))
+
+  for (i in 1:length(branches)) {
+    if (sum(branches[[i]]!="root" ) <= 1) {
+      mutcalls@mut2clone[branches[[i]]] <- as.integer(max(mutcalls@mut2clone) + 1)
+    } else {
+      d <- as.dist(1-cor(t(mutcalls@treeLikelihoods[branches[[i]],])))
+      #d <- dist( t(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]]) )
+      #pheatmap::pheatmap(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]],
+      #                   clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]])),
+      #                   clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]]))))
+      cl<- hclust(d)
+      plot(cl)
+      mutcalls@mut2clone[branches[[i]]] <- as.integer(max(mutcalls@mut2clone) + cutree(cl, h = min.cor))
+    }
+
+  }
   use <- mutcalls@mut2clone[colnames(mutcalls@cell2clone)]
   mutcalls@mainClone <- sapply(unique(use), function(mainClone) {
-    apply(mutcalls@cell2clone[,use == mainClone], 1, sum)
+    if (sum(use == mainClone) == 1) mutcalls@cell2clone[,use == mainClone] else apply(mutcalls@cell2clone[,use == mainClone], 1, sum)
   }) #there is a problem here because cell2clone does not have the exact same length a mut2clone (identical muts were already excluded)
-  mutcalls
+
+  return(mutcalls)
 }
+
+
+getBranches <- function(tree) {
+  current <- c()
+  while (length(tree$children) == 1) {
+    current <- c(current, tree$mutation)
+    tree <- tree$children[[1]]
+  }
+  if (length(tree$children) == 0) return(c(current, tree$mutation))
+  result <- removeDepth(lapply(tree$children, getBranches))
+  result[[length(result)+1]] <- c(current, tree$mutation)
+  return(result)
+}
+
+removeDepth <- function(list) {
+  out <- list()
+  for (i in 1:length(list)) {
+    if (is.list(list[[i]])) {
+      for (j in 1:length(list[[i]])) {
+        out[[length(out)+1]] <- list[[i]][[j]]
+      }
+    } else out[[length(out)+1]] <- list[[i]]
+  }
+  out
+}
+
