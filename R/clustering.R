@@ -10,9 +10,10 @@
 #'@param time maximum time to be used for PhISCS optimization, in seconds (defaults to 10000)
 #'@param tempfolder temporary folder to use for PhISCS output
 #'@param python_env Any shell commands to execute in order to make the gurobi python package availabler, such as \code{source activate myenv}
+#'@param force_recalc Rerun PhISCS even if the \code{tempfolder} contains valid PhISCS output
 #'@return an object of class \code{\link{mutationCalls}}, with an inferred tree structure and cell to clone assignment added.
 #'@export
-muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, time =10000, tempfolder = tempdir(), python_env = "") {
+muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, time =10000, tempfolder = tempdir(), python_env = "", force_recalc = F) {
 
   #prepare data and run PhISCS
   usedata <- mutcalls@ternary[,mutcalls@cluster]
@@ -27,8 +28,13 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
                      fn, fp,
                      file.path(tempfolder,"out"),
                      cores, time)
-  message("Now running the following command:", command)
-  tryCatch(system(command), error = function(e) stop("PhISCS error: ",e,"Make sure that the gurobi python package is available and consider specifying python_env."))
+  if (!file.exists(file.path(tempfolder, "out", "in.CFMatrix")) | force_recalc) {
+    message("Now running the following command:", command)
+    tryCatch(system(command), error = function(e) stop("PhISCS error: ",e,"Make sure that the gurobi python package is available and consider specifying python_env."))
+  } else {
+    message("Now running the following command:", command)
+  }
+
 
 
   #read in the result and create tree data structure
