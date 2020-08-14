@@ -127,7 +127,8 @@ clusterMetaclones <- function(mutcalls, min.lik = 1) {
       mutcalls@mut2clone[branches[[i]]] <- as.integer(max(mutcalls@mut2clone) + 1)
     } else {
       #d <- as.dist(1-cor(t(mutcalls@treeLikelihoods[branches[[i]],])))
-      d <- dist( t(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]]) )
+      ub <- branches[[i]][branches[[i]]!="root"]
+      d <- dist( t(mutcalls@treeLikelihoods[ub,ub]) )
       #pheatmap::pheatmap(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]],
       #                   clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]])),
       #                   clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]]))))
