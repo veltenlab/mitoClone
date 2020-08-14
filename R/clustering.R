@@ -111,10 +111,10 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
 #'
 #'PhISCS orders all mutations into a hierarchical mutational tree; in many cases, the exact order of the acquisition of individual mutations in not unanimously determined from the data. This function computes the change in likelihood of the infered clonal assignment if two mutations are merged into a clone. Hierarchical clustering is then used to determine the clonal structure. The result is visualized and should be fine-tuned using the \code{min.cor} parameter.
 #'@param mutcalls mutcalls object of class \code{\link{mutationCalls}} for which \code{\link{muta_cluster}} has been run
-#'@param min.cor specifies the minimum correlation required
+#'@param min.lik specifies the minimum difference in likelihood required
 #'
 #'@export
-clusterMetaclones <- function(mutcalls, min.cor = 0.5) {
+clusterMetaclones <- function(mutcalls, min.lik = 1) {
   #split the tree into branches with no further splits
   branches <- getBranches(mutcalls@tree)
   mutcalls@mut2clone <- as.integer(rep(0, nrow(mutcalls@treeLikelihoods)))
@@ -126,14 +126,14 @@ clusterMetaclones <- function(mutcalls, min.cor = 0.5) {
     if (sum(branches[[i]]!="root" ) <= 1) {
       mutcalls@mut2clone[branches[[i]]] <- as.integer(max(mutcalls@mut2clone) + 1)
     } else {
-      d <- as.dist(1-cor(t(mutcalls@treeLikelihoods[branches[[i]],])))
-      #d <- dist( t(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]]) )
+      #d <- as.dist(1-cor(t(mutcalls@treeLikelihoods[branches[[i]],])))
+      d <- dist( t(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]]) )
       #pheatmap::pheatmap(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]],
       #                   clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]])),
       #                   clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]]))))
       cl<- hclust(d)
       plot(cl)
-      mutcalls@mut2clone[branches[[i]]] <- as.integer(max(mutcalls@mut2clone) + cutree(cl, h = min.cor))
+      mutcalls@mut2clone[branches[[i]]] <- as.integer(max(mutcalls@mut2clone) + cutree(cl, h = nrow(mutcalls@M) * min.lik))
     }
 
   }
