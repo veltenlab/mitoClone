@@ -13,7 +13,7 @@
 #'@slot cell2clone Probability matrix of single cells and their assignment to clones.
 #'@slot mut2clone Maps mutations to main clones
 #'@slot mainClone Probability matrix of single cells and their assignment to main clones
-#'@slot treeLikelihoods Likelihood matrix underlying the inference of main clones, see \code{\link{setMainClone}}
+#'@slot treeLikelihoods Likelihood matrix underlying the inference of main clones, see \code{\link{clusterMetaclones}}
 #'@export
 mutationCalls <- setClass(
   "mutationCalls",
