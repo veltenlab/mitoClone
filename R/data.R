@@ -16,3 +16,14 @@ NULL
 
 #'@rdname data
 "N_P2"
+
+#' Mitochondrial blacklist
+#'
+#' Blacklist of variants that are likely not true somatic mutations
+#' @format A list with three entries:
+#' #' \itemize{
+#'   \item \emph{three} **explanations ben**
+#'   \item \emph{mutaseq} **explanations ben**
+#'   \item \emph{masked} **explanations ben**
+#' }
+"blacklists"

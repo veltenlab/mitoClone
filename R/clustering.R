@@ -133,7 +133,7 @@ clusterMetaclones <- function(mutcalls, min.lik = 1) {
       #                   clustering_distance_cols = as.dist(1-cor(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]])),
       #                   clustering_distance_rows = as.dist(1-cor(t(mutcalls@treeLikelihoods[branches[[i]],branches[[i]]]))))
       cl<- hclust(d)
-      plot(cl)
+      tryCatch(plot(cl), error=function(e) "Failed to plot")
       mutcalls@mut2clone[branches[[i]]] <- as.integer(max(mutcalls@mut2clone) + cutree(cl, h = nrow(mutcalls@M) * min.lik))
     }
 

@@ -48,6 +48,8 @@ mutationCalls <- setClass(
 #'@return An object of class \code{\link{mutationCalls}}.
 #'@export
 mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(row.names = rownames(M)), binarize = function(M,N) {alleleRatio <- M/(M+N); apply(alleleRatio, 2, function(x) ifelse(is.na(x),"?", ifelse(x>0.05,"1","0")))}) {
+  colnames(M) <- make.names(colnames(M))
+  colnames(N) <- make.names(colnames(N))
   out <- new("mutationCalls", M=M, N=N, metadata = metadata, ternary=binarize(M,N))
 
   if (!is.null(cluster)) out@cluster <- cluster else {
