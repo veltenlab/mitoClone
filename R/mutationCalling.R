@@ -100,10 +100,10 @@ pullcounts.vars <- function(mc.out,vars){
   varcounts <- sapply(mc.out,function(x){
     ## focus on A,G,C,T
     x.ref <- sapply(seq(var.gr),function(y){
-      x[start(var.gr)[[y]],var.gr$ref[[y]]]
+      x[BiocGenerics::start(var.gr)[[y]],var.gr$ref[[y]]]
     })
     x.alt <- sapply(seq(var.gr),function(y){
-      x[start(var.gr)[[y]],var.gr$alt[[y]]]
+      x[BiocGenerics::start(var.gr)[[y]],var.gr$alt[[y]]]
     })
     return(list('ref'=x.ref,'alt'=x.alt))
   })
