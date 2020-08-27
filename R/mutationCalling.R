@@ -95,7 +95,7 @@ mut2gr <- function(mut) {
 #'Make this private
 #'
 #'@export
-pullcounts.vars <- function(mc.out,vars){
+pullcounts.vars <- function(mc.out,vars,cells){
   var.gr <- mut2gr(vars)
   varcounts <- sapply(mc.out,function(x){
     ## focus on A,G,C,T
@@ -110,6 +110,6 @@ pullcounts.vars <- function(mc.out,vars){
   var.ref <- do.call(cbind,varcounts['ref',])
   var.alt <- do.call(cbind,varcounts['alt',])
   row.names(var.alt) <- row.names(var.ref) <- vars
-  return(list('M'=var.alt,'N'=var.ref))
+  return(list('M'=var.alt[,cells],'N'=var.ref[,cells]))
 }
 ### convert mutation to GRanges
