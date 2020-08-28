@@ -44,13 +44,14 @@ mutationCalls <- setClass(
 #'@param M A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.
 #'@param N A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.
 #'@param cluster If \code{NULL}, only mutations with coverage in 20% of the cells or more will be used for the clustering, and all other mutations will be used for cluster annotation only. Alternatively, a boolean vector of length \code{ncol(M)} that specifies the desired behavior for each genomic site.
-#'@param binarize A function that turns M and N into a ternary matrix of mutation calls in single cells, where where -1 signfiies reference, 0 signifies dropout, and 1 signifies wild-type. The default was found to work well on mitochondrial data.
+#'@param binarize Allele frequency threshold to define a site as mutant (required for some clustering methods)
 #'@return An object of class \code{\link{mutationCalls}}.
 #'@export
-mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(row.names = rownames(M)), binarize = function(M,N) {alleleRatio <- M/(M+N); apply(alleleRatio, 2, function(x) ifelse(is.na(x),"?", ifelse(x>0.05,"1","0")))}) {
+mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(row.names = rownames(M)), binarize = 0.05) {
   colnames(M) <- make.names(colnames(M))
   colnames(N) <- make.names(colnames(N))
-  out <- new("mutationCalls", M=M, N=N, metadata = metadata, ternary=binarize(M,N))
+  binfun <- function(M,N) {alleleRatio <- M/(M+N); apply(alleleRatio, 2, function(x) ifelse(is.na(x),"?", ifelse(x>binarize,"1","0")))}
+  out <- new("mutationCalls", M=M, N=N, metadata = metadata, ternary=binfun(M,N))
 
   if (!is.null(cluster)) out@cluster <- cluster else {
     out@cluster <- apply(out@ternary!="?", 2, mean) > 0.2 #& apply(out@ternary=="1", 2, mean) > 0.04 #the last filter was not used when I made the figure, there was a filter on the allele freq. in RNA. Should maybe include this in the other routines? But this works as well

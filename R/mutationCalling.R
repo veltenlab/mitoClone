@@ -204,8 +204,15 @@ mut2gr <- function(mut) {
 }
 
 
-pullcounts.vars <- function(mc.out,vars, cells=NULL){
-  pos <- as.integer(gsub(" *[ACGT].+","",vars))
+#'Pull a variant counts
+#'
+#'@param BaseCounts A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromSingleBam}} or \code{\link{baseCountsFromBamList}}
+#'@param vars Character vector of variants to pull, in format 5643G>T
+#'@param cells Character vector for cells to select, or NULL if all cells from the input are to be used
+#'@return A list with two entries, M (count table on the variant allele) and N (count table on the reference allele)
+#'@export
+pullcounts.vars <- function(mc.out,vars, cells=NULL, shift=0){
+  pos <- as.integer(gsub(" *[ACGT].+","",vars)) + shift
   ref <- gsub("\\d+ *([ACGT])>(.+)","\\1",vars)
   alt <- gsub("\\d+ *([ACGT])>(.+)","\\2",vars)
   N <- sapply(mc.out, function(cell) {

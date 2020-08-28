@@ -13,8 +13,33 @@ In this vignette, we demonstrate how to call true mitochondrial somatice variant
 
 ```{r example,fig.width = 6, fig.height=4}
 LudwigFig5.Counts <- readRDS('/g/steinmetz/story/cancer/revisions/data/fig5_mc_out.RDS') #store this on bobby:/var/www2/html/mutaseq so as to be able to download
-LudwigFig5 <- mutationCallsFromBlacklist(LudwigFig5.Counts) #adjust parameters
-LudwigFig5 <- muta_cluster(LudwigFig5, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=6)
-LudwigFig5 <- clusterMetaclones(LudwigFig5) #this function might need to be fixed
-plotClones(LudwigFig5)
+LudwigFig5 <- mutationCallsFromBlacklist(LudwigFig5.Counts,min.af=0.05, min.num.samples=5, universal.var.cells = 0.5 * length(LudwigFig5.Counts), binarize = 0.1)
+
+LudwigFig5.Meta <- data.frame(row.names = rownames(LudwigFig5@N), Clone = gsub("_.*","",gsub("Donor1_","",rownames(LudwigFig5@N))))
+clustered <- quick_cluster(LudwigFig5, binarize = T, drop_empty = T, clustering.method = "ward.D2", annotation_col = LudwigFig5.Meta,show_colnames=F,fontsize_row = 7)
+cut <- cutree(clustered$tree_col, k = 50)
+
+
+
+
+tree <- sapply(unique(cut), function(id) table(LudwigFig5.Meta[names(which(cut == id)),"Clone"])/sum(cut==id))
+colnames(tree) <- as.character(1:ncol(tree))
+pheatmap(tree[order(apply(tree,1,max)),], cluster_rows = F, cluster_cols = F,border_color = NA, fontsize_col = 7)
+# 
+# supervised.variants <- c("9508 T>C","781 T>C","15640 T>C","2467 T>C","8979 T>C","14356 T>C","10192 T>C","12737 G>A","6713 A>G","11643 G>A","1084 A>G","4654 A>G","2983 A>G","2625 A>G","6051 T>C","13328 A>G","3777 G>A","15004 G>A","12566 T>C","10587 G>A","7276 T>C","8382 T>C","13094 G>A","14094 T>C","3745 A>G","14306 G>A","12561 A>G","7341 G>A","11457 G>A","10167 T>C","7589 G>A","5915 A>G","7755 G>A","7661 T>C","7055 G>A","2648 G>A","11563 G>A","6575 G>A","6505 G>A","10681 G>A","3242 A>C","3935 G>A","4771 G>A","11623 A>C","8015 A>G","6758 T>C","3996 A>G","1448 A>G","9911 T>C")
+# 
+# hand.selected <- pullcounts.vars(LudwigFig5.Counts, supervised.variants, shift=-1)
+# hand.selected <- mutationCallsFromMatrix(t(hand.selected$M), t(hand.selected$N), cluster = rep(T, length(supervised.variants)), binarize = 0.05)
+# 
+# LudwigFig5.Meta <- data.frame(row.names = rownames(hand.selected@N), Clone = gsub("_.*","",gsub("Donor1_","",rownames(hand.selected@N))))
+# af <- hand.selected@M / (hand.selected@M + hand.selected@N)
+# af <- af[order(LudwigFig5.Meta$Clone),]
+# pheatmap(t(af), cluster_rows = F,cluster_cols = F , annotation_col = LudwigFig5.Meta )
+
+# #compare to PhISCS output
+# LudwigFig5 <- muta_cluster(LudwigFig5, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=6, tempfolder = "/g/steinmetz/project/singcellTxn/AML/MitochondriaRevisions/package/runs/Ludwig5/")
+
+# phisics.out <- read.table("/g/steinmetz/project/singcellTxn/AML/MitochondriaRevisions/package/runs/Ludwig5/out/in.CFMatrix",header=T, row.names = 1)
+#  LudwigFig5.Meta <- data.frame(row.names = rownames(phisics.out), Clone = gsub("S.*","",gsub("Donor1_","",rownames(phisics.out))))
+#  pheatmap(t(phisics.out) , annotation_col = LudwigFig5.Meta )
 ```
