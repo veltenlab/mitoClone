@@ -1,11 +1,10 @@
-#'Clustering of single cells by mutation status
+#'Inference of mutational trees by of single cell mutational status
 #'
 #'From data on the observed mutational status of single cells at a number of genomic sites, computes a likely phylogenetic tree using PhISCS (https://github.com/sfu-compbio/PhISCS) and associates single cells with leaves of the tree.
 #'The function \code{\link{clusterMetaclones}} should be called on the output in order to group mutations into clones using a likelihood-based approach.
 #'@param mutcalls object of class \code{\link{mutationCalls}}.
 #'@param fn false negative rate, i.e. the probability of only observing the reference allele if there is a mutation. #add gene-wise
 #'@param fp false positive, i.e. the probability of observing the mutant allele if there is no mutation.
-#'@param png file name to plot the tree into, or NULL if no plotting is required
 #'@param cores number of cores to use for PhISCS (defaults to 1)
 #'@param time maximum time to be used for PhISCS optimization, in seconds (defaults to 10000)
 #'@param tempfolder temporary folder to use for PhISCS output
@@ -13,7 +12,7 @@
 #'@param force_recalc Rerun PhISCS even if the \code{tempfolder} contains valid PhISCS output
 #'@return an object of class \code{\link{mutationCalls}}, with an inferred tree structure and cell to clone assignment added.
 #'@export
-muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, time =10000, tempfolder = tempdir(), python_env = "", force_recalc = F) {
+muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, cores = 1, time =10000, tempfolder = tempdir(), python_env = "", force_recalc = F) {
 
   #prepare data and run PhISCS
   suppressWarnings(dir.create(tempfolder))
@@ -92,8 +91,26 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, t
 
 }
 
+#'Quick clustering of mutations
+#'
+#'Performs a quick hierarchical clustering on a object of class \code{\link{mutationCalls}}. See \code{\link{muta_cluster}} for an alternative that infers mutational trees and uses sound models of dropout.
+#'@param mutcalls object of class \code{\link{mutationCalls}}.
+#'@param binarize If \code{FALSE}, will use raw allele frequencies for the clustering. If \code{TRUE}, will use binarized mutation/reference/dropout calls. Alternatively, provide a function top create binarized mutation/reference/dropout calls from the matrices M and N, see \code{\link{mutationCallsFromMatrix}}
+#'@param ... Parameters passed to \code{\link{pheatmap::pheatmap}}
+#'@return The result of running \code{\link{pheatmap::pheatmap}}
+#'@export
+quick_cluster <- function(mutcalls, binarize = F, ...) {
+  if (typeof(binarize) == "closure") {
+    mutcalls@ternary <- binarize(mutcalls@M,mutcalls@N)
+    converted <- t(apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="0",-1,0))))
+  } else {
+    if (binarize ) converted <- t(apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="0",-1,0))))
+    if (!binarize) converted <- t(LudwigFig5@M / (LudwigFig5@M + LudwigFig5@N))
+  }
 
+  clustered <- pheatmap(converted, ...)
 
+}
 # clusterMetaclones <- function(mutcalls, nclust = 3) {
 #   #determine clustering
 #
