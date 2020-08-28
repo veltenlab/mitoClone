@@ -1,0 +1,20 @@
+---
+title: "Variant calling and validation"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this vignette, we demonstrate how to call true mitochondrial somatice variants from single-cell RNA-seq data **from single individuals**, and we further justify our filtering strategy using reference data. In particular, we here make use of a blacklist created in the vignette [Variant calling and blacklist creation (using cohort data)](callingCohort.html).
+
+## Example Figure 5
+
+```{r example,fig.width = 6, fig.height=4}
+LudwigFig5.Counts <- readRDS('/g/steinmetz/story/cancer/revisions/data/fig5_mc_out.RDS') #store this on bobby:/var/www2/html/mutaseq so as to be able to download
+LudwigFig5 <- mutationCallsFromBlacklist(LudwigFig5.Counts) #adjust parameters
+LudwigFig5 <- muta_cluster(LudwigFig5, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=6)
+LudwigFig5 <- clusterMetaclones(LudwigFig5) #this function might need to be fixed
+plotClones(LudwigFig5)
+```

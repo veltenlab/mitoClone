@@ -1,0 +1,43 @@
+---
+title: "Variant calling and blacklist creation (using cohort data)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Given single-cell RNA-seq data **from several individuals**, this vignette describes how to identify somatic mitochondrial variants that are specific to single individuals, while at the same time creating a blacklist of sites that are observed in several individuals. The rational for this strategy is that artefactual (RNA-only) variants are often shared between individuals, whereas true somatic variants are not.
+
+## Description of input data
+
+The first step for prepocessing will be to count variants (A, C, G, T, insertion, deletion) at every site of the mitochondrial genome. For this, a list of BAM files is required; to access the BAM files and raw data used for this study, we have to refer to [EGA (Study EGAS00001003414)](https://www.ebi.ac.uk/ega/studies/EGAS00001003414). Assuming bam files are in a folder `bam`, count tables can be created with
+
+
+```{r createCountTables, eval=F}
+countTables <- baseCountsFromBamList( list.files("bam", full.names = T) )
+```
+
+Here, we download pre-computed base count tables. We note that these consist of lists of matrices. Each entry in the list corresponds to a single cell. Matrix rows are sites in the mitochondrial genome, and columns are counts 
+
+```{r downloadCountTables, eval=F}
+countTables <- readRDS( url("http://steinmetzlab.embl.de/mutaseq/nuc.count.per.position.RDS") )
+print(head(countTables[[1]]))
+```
+
+Finally, we parse out the patient that each cell in the list derives from.
+```{r parsePatient, eval=F}
+patient <- gsub("_.+","",names(countTables))
+```
+
+## Cohort-level variant calling
+
+We next use the \code{\link{mutationCallsFromCohort}} function to a) filter on coverage to include potentially noisy variants and b) compare allele frequencies between patients to remove variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events).
+
+```{r pressure, echo=FALSE}
+result <- mutationCallsFromCohort(countTables, patient)
+#### MISSING: Further filtering step to get exactly the list of mutations used for P342 and HRK?? Was there further filtering using blacklist$three or blacklist$masked
+### MISSING: Blacklist creation to be made consistent
+```
+
+The result for patient P1 (`result$P342`) an P2 (`result$HRK`) serves as input into the vignette [Computation of phylogenetic trees and clustering of mutations](clustering.html). The blacklist (`result$blacklist`) serves as input into the vignette [Variant calling and validation](calling.html).
