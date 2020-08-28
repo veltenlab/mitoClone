@@ -32,6 +32,7 @@ NULL
 #'@param MINRELATIVE.PATIENT Minimum fraction of mutant cells per patient to classify the mutation as relevant in that patient
 #'@param MINRELATIVE.OTHER Minimum fraction of mutant cells identified in a second patient for the mutation to be excluded
 #'@return A list of \code{\link{mutationCalls}} objects (one for each \code{patient}) and an entry \code{blacklist} containing a blacklist of sites with variants in several individuals
+#'@export
 mutationCallsFromCohort <- function(BaseCounts, patient, MINREADS = 5, MINCELL = 20, MINFRAC = 0.1, MINCELLS.PATIENT = 10, MINRELATIVE.PATIENT = 0.01, MINRELATIVE.OTHER = 0.1) {
   nuc.count.per.position.array <- array(data = 0,
                                         dim = c(length(BaseCounts),
@@ -141,7 +142,7 @@ mutationCallsFromCohort <- function(BaseCounts, patient, MINREADS = 5, MINCELL =
 #'@param max.cell.na Final filtering step: Remove all cells with no coverage in more than this fraction of mutations
 #'@return An object of class \code{\link{mutationCalls}}
 #'@export
-mutationCallsFromBlacklist <- function(BaseCounts,lim.cov=20, min.af=0.2, min.num.samples=0.01*length(BaseCounts), universal.var.cells=0.95*length(BaseCounts), blacklists.use = blacklist, max.var.na = 0.5, max.cell.na = 0.95) {
+mutationCallsFromBlacklist <- function(BaseCounts,lim.cov=20, min.af=0.2, min.num.samples=0.01*length(BaseCounts), universal.var.cells=0.95*length(BaseCounts), blacklists.use = blacklists, max.var.na = 0.5, max.cell.na = 0.95) {
   varaf <- parallel::mclapply(BaseCounts,function(x){
     ## focus on A,G,C,T
     x <- x[,1:4]
@@ -203,9 +204,9 @@ mut2gr <- function(mut) {
 
 
 pullcounts.vars <- function(mc.out,vars, cells=NULL){
-  pos <- as.integer(gsub("[ACGT].+","",vars))
-  ref <- gsub("\\d+([ACGT])>(.+)","\\1",vars)
-  alt <- gsub("\\d+([ACGT])>(.+)","\\2",vars)
+  pos <- as.integer(gsub(" *[ACGT].+","",vars))
+  ref <- gsub("\\d+ *([ACGT])>(.+)","\\1",vars)
+  alt <- gsub("\\d+ *([ACGT])>(.+)","\\2",vars)
   N <- sapply(mc.out, function(cell) {
     mapply(function(p,x) cell[p,x], pos, ref)
   })

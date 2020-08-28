@@ -16,6 +16,8 @@
 muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, png = NULL, cores = 1, time =10000, tempfolder = tempdir(), python_env = "", force_recalc = F) {
 
   #prepare data and run PhISCS
+  suppressWarnings(dir.create(tempfolder))
+
   usedata <- mutcalls@ternary[,mutcalls@cluster]
   write.table(usedata, file = file.path(tempfolder,"in.txt"), quote = F, sep="\t",
               row.names = gsub("[><_]","",rownames(usedata)),col.names = gsub("[><_]","",colnames(usedata)))
