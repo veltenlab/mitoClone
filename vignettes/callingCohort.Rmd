@@ -40,4 +40,4 @@ result <- mutationCallsFromCohort(countTables, patient)
 ### MISSING: Blacklist creation to be made consistent
 ```
 
-The result for patient P1 (`result$P342`) an P2 (`result$HRK`) serves as input into the vignette [Computation of phylogenetic trees and clustering of mutations](clustering.html). The blacklist (`result$blacklist`) serves as input into the vignette [Variant calling and validation](calling.html).
+The result for patient P1 (`result$P342`) an P2 (`result$HRK`) serves as input into the vignette [Computation of phylogenetic trees and clustering of mutations](clustering.html). The blacklist (`result$blacklist`) serves as input into the vignette [Variant calling and validation](calling.html). We have added regions of trinucleotide repeats and softmased regions to this blacklist, since we observed that those tend to contain false positives as well. See the `blacklist` object provided as part of the package.
