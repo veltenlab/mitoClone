@@ -110,7 +110,7 @@ quick_cluster <- function(mutcalls, binarize = F,drop_empty =T,  ...) {
     if (!binarize) converted <- t(mutcalls@M / (mutcalls@M + mutcalls@N))
   }
 
-  clustered <- pheatmap::pheatmap(converted[mutcalls@cluster,], ...)
+  clustered <- pheatmap::pheatmap(converted[mutcalls@cluster,],...)
 
 }
 # clusterMetaclones <- function(mutcalls, nclust = 3) {

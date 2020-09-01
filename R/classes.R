@@ -38,6 +38,7 @@ mutationCalls <- setClass(
   }
 
 )
+
 #'mutationCalls constructor
 #'
 #'To be used when allele-specific count matrices are available.

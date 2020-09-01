@@ -92,8 +92,6 @@ mutationCallsFromCohort <- function(BaseCounts, patient, MINREADS = 5, MINCELL =
 
   #throw out anything with less than
   #a) 10 cells and 1% support in any patient
-  MINCELLS.PATIENT <- 10
-  MINRELATIVE.PATIENT <- 0.01
   filter <- apply(varcount.bypatient, 1, max) > MINCELLS.PATIENT & apply(varcount.bypatient, 1, function(x) max(x) / patient.count[which.max(x)] ) > MINRELATIVE.PATIENT
 
   #b) support of more than 10 cells or 10% the level in a second patient
@@ -114,6 +112,7 @@ mutationCallsFromCohort <- function(BaseCounts, patient, MINREADS = 5, MINCELL =
 
   out <- lapply(unique(patient), function(pa) {
     #a, retrieve matrices of allele counts for patient specific variants
+    if (sum(mutation.bypatient == pa) == 0) return(NULL)
     MN <- pullcounts.vars(BaseCounts[patient == pa], colnames(variant_calls_selected)[mutation.bypatient == pa])
     #b, create mutationCalls object
     o <- mutationCallsFromMatrix(t(MN$M), t(MN$N))
@@ -222,6 +221,10 @@ pullcounts.vars <- function(mc.out,vars, cells=NULL, shift=0){
   M <- sapply(mc.out, function(cell) {
     mapply(function(p,x) cell[p,x], pos, alt)
   })
+  if(!is.matrix(M)) {
+    M <- matrix(M, ncol = length(M),dimnames = list(vars, names(M)))
+    N <- matrix(N, ncol = length(N),dimnames = list(vars,names(N)))
+  }
   rownames(M) <- vars -> rownames(N)
   if (is.null(cells)) return(list(M = M, N = N)) else return(list(M = M[,cells], N = N[,cells]))
   # var.gr <- mut2gr(vars)
