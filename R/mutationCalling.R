@@ -136,14 +136,15 @@ mutationCallsFromCohort <- function(BaseCounts, patient, MINREADS = 5, MINCELL =
 #'@param lim.cov Minimal coverage required per cell for a cell to be classified as covered
 #'@param min.af Minimal allele frequency for a cell to be classified as mutant
 #'@param min.num.samples Minimal number of cells required to be classified as covered and mutant according to the thresholds set in \code{lim.cov} and \code{min.af}. Usually specified as a fraction of the total number of cells.
-#'@param universal.var.cells Maximum number of cells required to be classified as mutant according to the threshold set in \code{min.af}.  Usually specified as a fraction of the total number of cells; serves to avoid e.g. germline variants.
+#'@param universal.var.cells Maximum number of cells required to be classified as mutant according to the threshold set in \code{min.af.universal}.  Usually specified as a fraction of the total number of cells; serves to avoid e.g. germline variants.
+#'@param min.af.universal Minimal allele frequency for a cell to be classified as mutant, in the context of removing universal variants. Defaults to \code{min.af}, but can be set to lower values.
 #'@param blacklists Blacklists to use **explanations ben**
 #'@param max.var.na Final filtering step: Remove all mutations with no coverage in more than this fraction of cells
 #'@param max.cell.na Final filtering step: Remove all cells with no coverage in more than this fraction of mutations
 #'@param ... Parameters passed to \code{\link{mutationCallsFromMatrix}}
 #'@return An object of class \code{\link{mutationCalls}}
 #'@export
-mutationCallsFromBlacklist <- function(BaseCounts,lim.cov=20, min.af=0.2, min.num.samples=0.01*length(BaseCounts), universal.var.cells=0.95*length(BaseCounts), blacklists.use = blacklists, max.var.na = 0.5, max.cell.na = 0.95, ...) {
+mutationCallsFromBlacklist <- function(BaseCounts,lim.cov=20, min.af=0.2, min.num.samples=0.01*length(BaseCounts), min.af.universal =min.af, universal.var.cells=0.95*length(BaseCounts), blacklists.use = blacklists, max.var.na = 0.5, max.cell.na = 0.95, ...) {
   varaf <- parallel::mclapply(BaseCounts,function(x){
     ## focus on A,G,C,T
     x <- x[,1:4]
@@ -184,7 +185,7 @@ mutationCallsFromBlacklist <- function(BaseCounts,lim.cov=20, min.af=0.2, min.nu
   varaf <- varaf[rowSums(varaf,na.rm=T) > 0,] #colSums(varaf,na.rm=T) > 0
   #}
 
-  varaf <- varaf[!rowSums(varaf >= min.af,na.rm=TRUE) >= universal.var.cells,]
+  varaf <- varaf[!rowSums(varaf >= min.af.universal,na.rm=TRUE) >= universal.var.cells,]
   ## vars must have less than X % NA's
   varaf <- varaf[rowSums(is.na(varaf)) < max.var.na*NCOL(varaf),]
   ## cells must have less than X % NA's
