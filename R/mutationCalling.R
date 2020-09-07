@@ -2,9 +2,10 @@
 #'
 #'Uses the \code{deepSNV} package to count nucleotide frequencies at every position in the mitochondrial genome for every cell and passes the result to the \code{\link{mutationCallsFromDeepSNV}} function for filtering variants.
 #'@param bamfiles A character vector specifyign the bam file paths
+#'@param sites Vector specifying genomic regions, defaults to the entire mitochondrial genome. Can be modified to query nuclear mutations
 #'@return A list of base count matrices which can serve as an input to \code{\link{mutationCallsFromBlacklist}} or \code{\link{mutationCallsFromCohort}}
 #'@export
-baseCountsFromBamList <- function(bamfiles) {
+baseCountsFromBamList <- function(bamfiles, sites = "chrM:1-16659") {
 NULL
 }
 
@@ -13,10 +14,11 @@ NULL
 #'
 #'More explanations of what happens
 #'@param bam Path to the bam file
+#'@param sites Vector specifying genomic regions, defaults to the entire mitochondrial genome. Can be modified to query nuclear mutations
 #'@param tag Name of the bam file tag
 #'@return A list of base count matrices which can serve as an input to \code{\link{mutationCallsFromBlacklist}} or \code{\link{mutationCallsFromCohort}}
 #'@export
-baseCountsFromSingleBam <- function(bam, tag = "XQ:C") {
+baseCountsFromSingleBam <- function(bam, sites = "chrM:1-16659", tag = "XQ:C") {
 NULL
 }
 
