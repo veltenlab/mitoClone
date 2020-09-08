@@ -9,8 +9,7 @@ mutationCallsFromMatrix(
   N,
   cluster = NULL,
   metadata = data.frame(row.names = rownames(M)),
-  binarize = function(M, N) {     alleleRatio <- M/(M + N)     apply(alleleRatio, 2,
-    function(x) ifelse(is.na(x), "?", ifelse(x > 0.05, "1", "0"))) }
+  binarize = 0.05
 )
 }
 \arguments{
@@ -20,7 +19,7 @@ mutationCallsFromMatrix(
 
 \item{cluster}{If \code{NULL}, only mutations with coverage in 20% of the cells or more will be used for the clustering, and all other mutations will be used for cluster annotation only. Alternatively, a boolean vector of length \code{ncol(M)} that specifies the desired behavior for each genomic site.}
 
-\item{binarize}{A function that turns M and N into a ternary matrix of mutation calls in single cells, where where -1 signfiies reference, 0 signifies dropout, and 1 signifies wild-type. The default was found to work well on mitochondrial data.}
+\item{binarize}{Allele frequency threshold to define a site as mutant (required for some clustering methods)}
 }
 \value{
 An object of class \code{\link{mutationCalls}}.

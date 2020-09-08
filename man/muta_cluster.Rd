@@ -2,13 +2,12 @@
 % Please edit documentation in R/clustering.R
 \name{muta_cluster}
 \alias{muta_cluster}
-\title{Clustering of single cells by mutation status}
+\title{Inference of mutational trees by of single cell mutational status}
 \usage{
 muta_cluster(
   mutcalls,
   fn = 0.1,
   fp = 0.02,
-  png = NULL,
   cores = 1,
   time = 10000,
   tempfolder = tempdir(),
@@ -22,8 +21,6 @@ muta_cluster(
 \item{fn}{false negative rate, i.e. the probability of only observing the reference allele if there is a mutation. #add gene-wise}
 
 \item{fp}{false positive, i.e. the probability of observing the mutant allele if there is no mutation.}
-
-\item{png}{file name to plot the tree into, or NULL if no plotting is required}
 
 \item{cores}{number of cores to use for PhISCS (defaults to 1)}
 

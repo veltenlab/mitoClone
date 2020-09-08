@@ -8,17 +8,7 @@
 \alias{M_P2}
 \alias{N_P2}
 \title{Allele Count tables}
-\format{
-a data frame of variable sites (columns) across single cells (rows)
-
-An object of class \code{data.frame} with 1430 rows and 16 columns.
-
-An object of class \code{data.frame} with 1430 rows and 16 columns.
-
-An object of class \code{data.frame} with 1066 rows and 22 columns.
-
-An object of class \code{data.frame} with 1066 rows and 22 columns.
-}
+\format{a data frame of variable sites (columns) across single cells (rows)}
 \usage{
 M_P1
 
