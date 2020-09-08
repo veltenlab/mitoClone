@@ -133,9 +133,10 @@ quick_cluster <- function(mutcalls, binarize = F,drop_empty =T,  ...) {
 #'PhISCS orders all mutations into a hierarchical mutational tree; in many cases, the exact order of the acquisition of individual mutations in not unanimously determined from the data. This function computes the change in likelihood of the infered clonal assignment if two mutations are merged into a clone. Hierarchical clustering is then used to determine the clonal structure. The result is visualized and should be fine-tuned using the \code{min.cor} parameter.
 #'@param mutcalls mutcalls object of class \code{\link{mutationCalls}} for which \code{\link{muta_cluster}} has been run
 #'@param min.lik specifies the minimum difference in likelihood required
+#'@param plot whether dendrograms should be plotted.
 #'
 #'@export
-clusterMetaclones <- function(mutcalls, min.lik = 1) {
+clusterMetaclones <- function(mutcalls, min.lik = 1, plot = T) {
   #split the tree into branches with no further splits
   branches <- getBranches(mutcalls@tree)
   mutcalls@mut2clone <- as.integer(rep(0, nrow(mutcalls@treeLikelihoods)))
