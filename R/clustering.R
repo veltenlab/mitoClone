@@ -95,20 +95,15 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, cores = 1, time =10000, 
 #'
 #'Performs a quick hierarchical clustering on a object of class \code{\link{mutationCalls}}. See \code{\link{muta_cluster}} for an alternative that infers mutational trees and uses sound models of dropout.
 #'@param mutcalls object of class \code{\link{mutationCalls}}.
-#'@param binarize If \code{FALSE}, will use raw allele frequencies for the clustering. If \code{TRUE}, will use binarized mutation/reference/dropout calls. Alternatively, provide a function top create binarized mutation/reference/dropout calls from the matrices M and N, see \code{\link{mutationCallsFromMatrix}}
+#'@param binarize If \code{FALSE}, will use raw allele frequencies for the clustering. If \code{TRUE}, will use binarized mutation/reference/dropout calls.
 #'@param ... Parameters passed to \code{\link{pheatmap::pheatmap}}
 #'@return The result of running \code{\link{pheatmap::pheatmap}}
 #'@export
 quick_cluster <- function(mutcalls, binarize = F,drop_empty =T,  ...) {
-  if (typeof(binarize) == "closure") {
-    mutcalls@ternary <- binarize(mutcalls@M,mutcalls@N)
-    if (drop_empty ) mutcalls@ternary <- mutcalls@ternary[apply(mutcalls@ternary,1,function(x) any(x=="1")),]
-    converted <- t(apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="0",-1,0))))
-  } else {
+
     if (drop_empty) mutcalls@ternary <- mutcalls@ternary[apply(mutcalls@ternary,1,function(x) any(x=="1")),]
     if (binarize ) converted <- t(apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="0",-1,0))))
     if (!binarize) converted <- t(mutcalls@M / (mutcalls@M + mutcalls@N))
-  }
 
   clustered <- pheatmap::pheatmap(converted[mutcalls@cluster,],...)
 

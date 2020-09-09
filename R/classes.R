@@ -68,12 +68,19 @@ mutationCallsFromMatrix <- function(M, N, cluster=NULL, metadata = data.frame(ro
 #'@param show boolean vector specifying for each mutation if it should be plotted on top of the heatmap as metadata; defaults to mutations not used for the clustering \code{!mutcalls@cluster}
 #'@param ... any arguments passed to \code{\link{pheatmap::pheatmap}}
 #'@export
-plotClones <- function(mutcalls, what = "alleleRatio", show = !mutcalls@cluster, ...) {
+plotClones <- function(mutcalls, what = "alleleRatio", show = c(), ...) {
   if (what == "alleleRatio") plotData <- mutcalls@M / (mutcalls@M + mutcalls@N)
   if (what == "ternary") plotData <- apply(mutcalls@ternary, 2, function(x) ifelse(x == "1", 1, ifelse(x=="?", 0, -1)))
   plotData <- t(plotData[,getNodes(mutcalls@tree)[-1]]) #how to order rows?
-  annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@ternary[,show],
+  if (length(show) > 1) annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@ternary[,show],
                       mutcalls@metadata)
+  if (length(show) == 1) {
+    annos <- data.frame(row.names = rownames(mutcalls@M), ann = mutcalls@ternary[,show],
+                                               mutcalls@metadata)
+    colnames(annos)[2] <- show
+  }
+  if (length(show) == 0)  annos <- data.frame(row.names = rownames(mutcalls@M), mutcalls@metadata)
+
   if (length(mutcalls@mut2clone) > 0) {
     annos$mainClone <- as.factor(apply(mutcalls@mainClone, 1, which.max))
     annos$confidence <- apply(mutcalls@mainClone, 1, max)

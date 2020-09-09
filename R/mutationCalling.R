@@ -206,7 +206,7 @@ mut2gr <- function(mut) {
 }
 
 
-#'Pull a variant counts
+#'Pull variant counts
 #'
 #'@param BaseCounts A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromSingleBam}} or \code{\link{baseCountsFromBamList}}
 #'@param vars Character vector of variants to pull, in format 5643G>T
