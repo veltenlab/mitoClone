@@ -1,0 +1,117 @@
+---
+title: "De novo identification of nuclear variants"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Once you have identified clones from mitochondrial and known nuclear somatic variants by following the vignette for [Computation of phylogenetic trees and clustering of mutation](clustering.html), you can attempt to identify new mutations from expressed nuclear genes by following this vignette.
+
+## Before you begin
+
+COSMIC is used to restrict the hypothesis space. The first step is therefore to download COSMIC following the instructions provided on https://cancer.sanger.ac.uk/cosmic/download
+
+We performed some subsetting on the COSMIC data, in particular we restrict to putatively pathogenic SNVs and small InDels, variants in expressed genes (mean >20 reads per cell), and variants associated with a primary site "haematopoietic_and_lymphoid_tissue". In the end, we thereby ended up with a list of candidates, which for reproducibility can be downloaded:
+
+```{r positionList, eval=F}
+positions <- read.csv(url("http://steinmetzlab.embl.de/mutaseq/position_list.txt"), col.names = c("chr","pos"),header=F, stringsAsFactors = F)
+```
+
+A list of BAM files is required as input; to access the BAM files and raw data used for this study, we have to refer to [EGA (Study EGAS00001003414)](https://www.ebi.ac.uk/ega/studies/EGAS00001003414). For this vignette we assume that bam files are in a folder `bam`.
+
+## Count table creation
+
+The next step is to compute allele count tables in every cell. This takes time, consider parallelizing on a cluster, e.g. using the [rslurm](https://cran.r-project.org/web/packages/rslurm/vignettes/rslurm.html) package.
+
+```{r countTables, eval=F}
+library(deepSNV)
+require(VGAM)
+
+
+bam <- list.files("bam", full.names = T)
+
+getCounts <- function(chr,pos, bamfilelist) {
+  if (chr == "chr23") chr <- "chrX"
+  if (chr == "chr24") chr <- "chrY"
+  out <- lapply(bamfilelist, bam2R,chr =chr,start=pos, stop=pos)
+  out <- do.call(rbind,out)[,c("A","C","G","T","N","-","INS","DEL")]
+  out
+}
+
+countTables <- mapply(getCounts, positions$chr, positions$pos, MoreArgs = list(bamfilelist= bam), SIMPLIFY = F)
+```
+
+## Hypothesis testing
+
+Next we define two likelihood functions based on a beta binomial model: one for a simple model, where the ratio between variant and reference allele is the same in all the cells...
+
+```{r simpleModel, eval=F}
+likeli.simple <- function(params, data) {
+  params <- 1/(1+exp(-params))
+  -sum(mapply(dbetabinom, data[,1], apply(data,1,sum), MoreArgs = list(prob = params[1], rho = params[2], log=T)))
+  
+}
+```
+
+...and one for a complex model where the ratio is different in the different clones.
+
+```{r complexModel, eval=F}
+
+likeli.clas <- function(params, data, clones) {
+  params <- 1/(1+exp(-params))
+  out <- 0
+  for ( i in 1:max(clones)) {
+  add <- -sum(mapply(dbetabinom, data[clones==i,1], apply(data[clones==i,],1,sum), MoreArgs = list(prob = params[i], rho = params[max(clones)+1], log=T)))  
+  if(!is.na(add)) out <- out +add
+  }
+  out
+  
+}
+```
+
+The clonal identity of each cell is obtained by following the [Computation of phylogenetic trees and clustering of mutation](clustering.html) vignette
+
+```{r getclone, eval=F}
+clone <- apply(P1@mainClone,1,which.max)
+```
+
+Finally we define a function that takes the allele count tables as input, performs some further filtering, and then computes the maximum likelihoods of both models by numerical optimization. Again, this takes time and could be parallelized.
+
+```{r fitModels, eval=F}
+
+getAIC <- function(counts, clones) {
+  
+  test <- counts[,c("A","C","G","T","INS","DEL")]
+  colsums <- apply(test,2,sum)
+  if (max(colsums) > sum(colsums) - 100) return(NA) else {
+    test <- test[,rank(colsums) >= length(colsums)-1]
+    if(!is.matrix(test)) return(NA) else {
+      totalreads <- apply(test,1,sum)
+      ar <- apply(test,2,function(x) mean(x/totalreads,na.rm=T))[1]
+      ar.byclone <- sapply(unique(clones), function(cl) {
+        apply(test[clones == cl,],2,function(x) mean(x/totalreads[clones==cl],na.rm=T))
+      })[1,]
+      logit <- function(p) log(p/(1-p))
+      
+      #start with the max likelihood estimate of a binomal distribution to speed up the fit
+      ar <- logit(ar)
+      ar.byclone <- logit(ar.byclone)
+      ar.byclone[is.infinite(ar.byclone)] <- sign(ar.byclone)[is.infinite(ar.byclone)] * 100
+      ar.byclone[is.na(ar.byclone)] <- 0
+      optim.simple <- optim(c(ar,0), likeli.simple, data=test, control = list(reltol = 0.00001))
+      optim.complex <- optim(c(ar.byclone,0), likeli.clas, data=test, control = list(reltol = 0.00001))
+      return(optim.simple$value - optim.complex$value - 2 * max(clones))
+    }
+    
+    
+  }
+  
+}
+
+
+deltaAIC <- lapply(countTables, getAIC)
+```
+
+We noticed that the results contained many germline variants with putative differences in allele-specific expression between clones. Results were therefore further subsetted to exclude common germline variants from the 1000 genomes project, available at ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/hg38/1000G_phase1.snps.high_confidence.hg38.vcf.gz
