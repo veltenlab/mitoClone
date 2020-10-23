@@ -32,7 +32,7 @@ Estimated installation time: < 1 hour*
 
 ## 3. Demo
 
-Please see R vignettes for demo and further instructions. Use the command vignette("mitoseq") after loading the library (see Instructions) to list all available tutorials.
+Please see R vignettes for further instructions and a demo using real data. Use the command `vignette("mitoClone")` after loading the library (see Instructions) to list all available tutorials.
 
 Estimated demo completion time: < 1 hour
 
