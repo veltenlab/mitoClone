@@ -3,14 +3,14 @@
 The tool is used for performing the analysis of clonal heterogeneity based on nuclear and mitochondrial mutations in single cell RNA or DNA sequencing.
 
 ## 1. System requirements:
-   - Linux/Mac OS
+   - Linux/Mac
    - R 3.5+
    - Python 2.7, 3.6, or 3.7
    - Gurobi 9.0.0+
 
 See **DESCRIPTION** file for specific R package requirements.
 
-The software has been successfully implemented  and tested successfully using: Python 3.6.5, R 4.0.0 , and Gurobi 9.0.3 on CentOS 7.
+The software has been successfully implemented and tested using: Python 3.6.5, R 4.0.0, and Gurobi 9.0.3 on CentOS 7.
 
 ## 2. Installation
 For manual package installation use the command:
