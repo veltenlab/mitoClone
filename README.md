@@ -1,23 +1,57 @@
-# mitoClone
+# mitoClone R Package
 
-An R package for clonal tracking in single-cell RNA-seq data using nuclear and mitochondrial mutations. Based on Velten, Story et al., unpublished.
+The tool is used for performing the analysis of clonal heterogeneity based on nuclear and mitochondrial mutations in single cell RNA or DNA sequencing.
 
-## Requirements and installation
+## 1. System requirements:
+   - Linux/Mac OS
+   - R 3.5+
+   - Python 2.7, 3.6, or 3.7
+   - Gurobi 9.0.0+
+See DESCRIPTION file for specific R package requirements.
 
-This package has only been tested under Linux and Mac. It requires a current version of R (tested under 3.6.2) and python (tested under 3.7.3) and, importantly, an installation of gurobi and the gurobipy python package, [gurobi installation instructions](https://www.gurobi.com/documentation/9.0/quickstart_mac/software_installation_guid.html) and [instructions for installing gurobipy](https://support.gurobi.com/hc/en-us/articles/360044290292-How-do-I-install-Gurobi-for-Python-]). gurobi is freely available for academic users,see http://www.gurobi.com 
+The software has been successfully implemented  and tested successfully using: Python 3.6.5, R 4.0.0 , and Gurobi 9.0.3 on CentOS 7.
 
-If the use of conda is intended for managing the gurobi python environment, this conda environment is passed tp R using the parameter `python_env` of the `muta_cluster` function. See function documentation for detail, example: `python_env = "source activate gurobi"`.
+## 2. Installation
+For manual package installation use the command:
 
-Once the gurobipy package is available, installation of the package can be performed in less than one minute using
+`git clone https://github.com/veltenlab/mitoClone.git`
+
+For installing the library from github into R directly use:
+`library(devtools)`
+`devtools::install_github("veltenlab/mitoClone", build_vignettes = TRUE)`
+
+Estimated installation time: < 1 hour*
+
+*Not including acquiring and installing Gurobi license.
+
+## 3. Demo
+
+Please see R vignettes for demo and further instructions. Use the command vignette("mitoseq") after loading the library (see Instructions) to list all available tutorials.
+
+Estimated demo completion time: < 1 hour
+
+## 4. Usage Instructions
+
+After installing all dependencies, open an R session and load the library from its installation directory (e.g. mitoClone-master) using the following command:
+
+``` r
+library(devtools)`
+load_all(mitoClone-master)`
 ```
-devtools::install_github("veltenlab/mitoClone")
+
+Or if installed via `install_github`:
+
+``` r
+library(mitoseq)
 ```
 
-## Demo and instructions
+Please make sure to set your environmental python variables correctly for use of gurobi. See the `python_env` parameter used in the `muta_cluster` function.
 
-Demos and instructions are contained in the package vignettes that become available upon installation.
+Again please view the R vignettes for usage possibilities. See the following webpages (located in the cloned github folder) for various tutorials.
 
-1. callingCohort: Instructions on how to filter mitochondrial mutations using the strategy applied in the manuscript (typical runtime: > 5 minutes on a single CPU)
-2. calling:  Instructions on how to filter mitochondrial mutations if only data from a single individual is available (typical runtime: > 5 minutes on a single CPU)
-3. clustering: Instructions on how to cluster mutations into a clonal hierarchy and how to assign cells to clones (typical runtime: > 2 hours on a single CPU)
-4. denovo: Instructions on how to identify new mutations associated with the clones. This final part can have long runtimes depending on the dataset size and number of mutations. The vignette contains instructions that the user can adapt to the appropriate compute infrastructure.
+
+**callingCohort**: Instructions on how to filter mitochondrial mutations using the strategy applied in the manuscript (typical runtime: > 5 minutes on a single CPU)
+**calling**: Instructions on how to filter mitochondrial mutations if only data from a single individual is available (typical runtime: > 5 minutes on a single CPU)
+**clustering**: Instructions on how to cluster mutations into a clonal hierarchy and how to assign cells to clones (typical runtime: > 2 hours on a single CPU)
+**denovo**: Instructions on how to identify new mutations associated with the clones. This final part can have long runtimes depending on the dataset size and number of mutations. The vignette contains instructions that the user can adapt to the appropriate compute infrastructure.
+

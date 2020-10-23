@@ -33,14 +33,15 @@ P2@cluster["X2392TC"] <- F
 
 ## Compute a phylogenetic tree
 
-The next step is to run [PhISCS](https://github.com/sfu-compbio/PhISCS) to compute the most likely phylogenetic tree. PhISCS is bundled in this package, but the package needs to be run in an environment where [gurobi](https://www.gurobi.com) and the `gurobipy` python package are available. For example, you could set up a `conda` environment that contains this package. Please be sure to set the *python_env* variable appropriately for accessing your installation of gurobipy.
+The next step is to run [PhISCS](https://github.com/sfu-compbio/PhISCS) to compute the most likely phylogenetic tree. PhISCS is bundled in this package, but the package needs to be run in an environment where [gurobi](https://www.gurobi.com) and the `gurobipy` python package are available. For example, you could set up a `conda` environment that contains this package.
 
 ```{r runPhiscs}
-P1 <- muta_cluster(P1, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=6, tempfolder = paste0(getwd(),"/P342debug")
-P2 <- muta_cluster(P2, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=6, tempfolder = paste0(getwd(),"/P101debug")
+P1 <- muta_cluster(P1, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=6, tempfolder = "/g/steinmetz/project/singcellTxn/AML/MitochondriaRevisions/package/runs/P342debug")
+P2 <- muta_cluster(P2, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=6,
+                   tempfolder = "/g/steinmetz/project/singcellTxn/AML/MitochondriaRevisions/package/runs/P101debug")
 ```
 
-This step can take a while to run. It computes a likely phylogenetic tree of all the mutations. If you have graphviz (`dot`) installed, you can create postscript files displaying these plots:
+This step can take a while to run. It computes a likely phylogenetic tree of all the mutations. If you have grpaphviz (`dot`) installed, you can create postscript files displaying these plots:
 
 ```{r plotTree}
 plotTree(P1, file = "P1.ps")

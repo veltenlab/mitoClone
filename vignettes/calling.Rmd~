@@ -9,21 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 In this vignette, we demonstrate how to call true mitochondrial somatice variants from single-cell RNA-seq data **from single individuals**, and we further justify our filtering strategy using reference data. In particular, we here make use of a blacklist created in the vignette [Variant calling and blacklist creation (using cohort data)](callingCohort.html).
 
-
-
-## Before you begin
-
-The functions documented in this vignette use count tables of variants in the mitochondrial genome as input. Such tables are created from bam files using the function `baseCountsFromBamList`.
-
-## Example Ludwig et al., Figure 5
-
-The function `mutationCallsFromBlacklist` performs coverage-based filtering and then removes blacklisted variants. Some notes about its parameters:
-
-*   `min.af` is the minimal heteroplasmy (allele frequency) for a site to be considered mutant in a single cell. Depending on its value and the dataset, you will sometimes include variants that are present in all cells, but at a low heteroplasmy.
-
-*   `universal.var.cells` can be used to remove such variants, since it removes all variants classified as mutant in at least this number of cells (here, 50% of cells)
-
-*   `min.num.samples` specifies the minimum number of mutant cells required for a variant to be kept.
+## Example Figure 5
 
 ```{r example,fig.width = 6, fig.height=4}
 LudwigFig5.Counts <- readRDS(url("http://steinmetzlab.embl.de/mutaseq/fig5data.RDS"))
