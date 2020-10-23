@@ -51,7 +51,7 @@ Or if installed via `install_github`:
 library(mitoClone)
 ```
 
-Please make sure to set your environmental python variables correctly for use of gurobi. See the `python_env` parameter used in the `muta_cluster` function.
+Please make sure to set your environmental python variables correctly for use of gurobi. See for example the `python_env` parameter used in the `muta_cluster` function.
 
 Again please view the R vignettes for usage possibilities. See the following webpages (located in the cloned github folder) for various tutorials.
 
