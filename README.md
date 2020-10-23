@@ -26,7 +26,7 @@ devtools::install_github("veltenlab/mitoClone", build_vignettes = TRUE)
 
 Estimated installation time: < 1 hour*
 
-*Not including acquiring and installing Gurobi license.
+*\*Not including acquiring and installing Gurobi license.*
 
 ## 3. Demo
 
