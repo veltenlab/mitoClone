@@ -40,7 +40,7 @@ After installing all dependencies, open an R session and load the library from i
 
 ``` r
 library(devtools)
-load_all(mitoClone-master)
+load_all('mitoClone-master')
 ```
 
 Or if installed via `install_github`:
