@@ -19,8 +19,10 @@ For manual package installation use the command:
 
 For installing the library from github into R directly use:
 
-`library(devtools)`
-`devtools::install_github("veltenlab/mitoClone", build_vignettes = TRUE)`
+``` r
+library(devtools)
+devtools::install_github("veltenlab/mitoClone", build_vignettes = TRUE)
+```
 
 Estimated installation time: < 1 hour*
 
