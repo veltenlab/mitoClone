@@ -57,12 +57,8 @@ Please make sure to set your environmental python variables correctly for use of
 
 Again please view the R vignettes for usage possibilities. See the following webpages (located in the cloned github folder `inst/doc`) for various tutorials.
 
-
-**callingCohort**: Instructions on how to filter mitochondrial mutations using the strategy applied in the manuscript (typical runtime: > 5 minutes on a single CPU)
-
-**calling**: Instructions on how to filter mitochondrial mutations if only data from a single individual is available (typical runtime: > 5 minutes on a single CPU)
-
-**clustering**: Instructions on how to cluster mutations into a clonal hierarchy and how to assign cells to clones (typical runtime: > 2 hours on a single CPU)
-
-**denovo**: Instructions on how to identify new mutations associated with the clones. This final part can have long runtimes depending on the dataset size and number of mutations. The vignette contains instructions that the user can adapt to the appropriate compute infrastructure.
+   - **callingCohort**: Instructions on how to filter mitochondrial mutations using the strategy applied in the manuscript (typical runtime: > 5 minutes)
+   - **calling**: Instructions on how to filter mitochondrial mutations if only data from a single individual is available (typical runtime: > 5 minutes )
+   - **clustering**: Instructions on how to cluster mutations into a clonal hierarchy and how to assign cells to clones (typical runtime: > 2 hours)
+   - **denovo**: Instructions on how to identify new mutations associated with the clones. This final part can have long runtimes depending on the dataset size and number of mutations. The vignettes contain further instructions so that user can adapt parameters to their appropriate computational infrastructure.
 
