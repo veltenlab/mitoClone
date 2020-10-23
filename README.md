@@ -2,7 +2,7 @@
 
 The tool is used for performing the analysis of clonal heterogeneity based on nuclear and mitochondrial mutations in single cell RNA or DNA sequencing.
 
-## 1. System requirements:
+## 1. System Requirements:
    - Linux/Mac
    - R 3.5+
    - Python 2.7, 3.6, or 3.7
