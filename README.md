@@ -7,6 +7,7 @@ The tool is used for performing the analysis of clonal heterogeneity based on nu
    - R 3.5+
    - Python 2.7, 3.6, or 3.7
    - Gurobi 9.0.0+
+
 See DESCRIPTION file for specific R package requirements.
 
 The software has been successfully implemented  and tested successfully using: Python 3.6.5, R 4.0.0 , and Gurobi 9.0.3 on CentOS 7.
@@ -35,8 +36,8 @@ Estimated demo completion time: < 1 hour
 After installing all dependencies, open an R session and load the library from its installation directory (e.g. mitoClone-master) using the following command:
 
 ``` r
-library(devtools)`
-load_all(mitoClone-master)`
+library(devtools)
+load_all(mitoClone-master)
 ```
 
 Or if installed via `install_github`:
@@ -51,7 +52,10 @@ Again please view the R vignettes for usage possibilities. See the following web
 
 
 **callingCohort**: Instructions on how to filter mitochondrial mutations using the strategy applied in the manuscript (typical runtime: > 5 minutes on a single CPU)
+
 **calling**: Instructions on how to filter mitochondrial mutations if only data from a single individual is available (typical runtime: > 5 minutes on a single CPU)
+
 **clustering**: Instructions on how to cluster mutations into a clonal hierarchy and how to assign cells to clones (typical runtime: > 2 hours on a single CPU)
+
 **denovo**: Instructions on how to identify new mutations associated with the clones. This final part can have long runtimes depending on the dataset size and number of mutations. The vignette contains instructions that the user can adapt to the appropriate compute infrastructure.
 
