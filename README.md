@@ -34,6 +34,8 @@ Estimated installation time: < 1 hour*
 
 Please see R vignettes for further instructions and a demo using real data. Use the command `vignette("mitoClone")` after loading the library (see Instructions) to list all available tutorials.
 
+Following included tutorials should output figures reproducing publication results.
+
 Estimated demo completion time: < 1 hour
 
 ## 4. Usage Instructions
