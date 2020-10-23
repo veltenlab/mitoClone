@@ -18,6 +18,7 @@ For manual package installation use the command:
 `git clone https://github.com/veltenlab/mitoClone.git`
 
 For installing the library from github into R directly use:
+
 `library(devtools)`
 `devtools::install_github("veltenlab/mitoClone", build_vignettes = TRUE)`
 
