@@ -8,7 +8,7 @@ The tool is used for performing the analysis of clonal heterogeneity based on nu
    - Python 2.7, 3.6, or 3.7
    - Gurobi 9.0.0+
    
-Importantly, an installation of gurobi and the gurobipy python package, [gurobi installation instructions](https://www.gurobi.com/documentation/9.0/quickstart_mac/software_installation_guid.html) and [instructions for installing gurobipy](https://support.gurobi.com/hc/en-us/articles/360044290292-How-do-I-install-Gurobi-for-Python-]). gurobi is freely available for academic users,see http://www.gurobi.com 
+Importantly, an installation of both gurobi and the gurobipy python package, [gurobi installation instructions](https://www.gurobi.com/documentation/9.0/quickstart_mac/software_installation_guid.html) and [instructions for installing gurobipy](https://support.gurobi.com/hc/en-us/articles/360044290292-How-do-I-install-Gurobi-for-Python-]). Gurobi is freely available for academic users see http://www.gurobi.com.
 
 See **DESCRIPTION** file for specific R package requirements.
 
@@ -48,7 +48,7 @@ load_all('mitoClone-master')
 Or if installed via `install_github`:
 
 ``` r
-library(mitoseq)
+library(mitoClone)
 ```
 
 Please make sure to set your environmental python variables correctly for use of gurobi. See the `python_env` parameter used in the `muta_cluster` function.
