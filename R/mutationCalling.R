@@ -143,8 +143,8 @@ mutationCallsFromCohort <- function(BaseCounts, patient, MINREADS = 5, MINCELL =
 
 #'Create a mutationCalls object from nucleotide base calls using a blacklist (single individual)
 #'
-#'Identifies relevant mitochondrial somatic variants from raw counts of nucleotide frequencies. Applies two sets of filters: In the first step, filters on coverage and minimum allele frequency to include potentially noisy variants; in the second step, filters against a blacklist of variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events). These blacklists are created using \code{\link{mutationCallsFromCohort}}
-#'@param BaseCounts A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromSingleBam}} or \code{\link{baseCountsFromBamList}}
+#'Identifies relevant mitochondrial somatic variants from raw counts of nucleotide frequencies. Applies two sets of filters: In the first step, filters on coverage and minimum allele frequency to exclude potentially noisy variants; in the second step, filters against a blacklist of variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events). These blacklists are created using \code{\link{mutationCallsFromCohort}}
+#'@param BaseCounts A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromBamList}}
 #'@param lim.cov Minimal coverage required per cell for a cell to be classified as covered
 #'@param min.af Minimal allele frequency for a cell to be classified as mutant
 #'@param min.num.samples Minimal number of cells required to be classified as covered and mutant according to the thresholds set in \code{lim.cov} and \code{min.af}. Usually specified as a fraction of the total number of cells.
@@ -219,7 +219,7 @@ mut2gr <- function(mut) {
 
 #'Pull variant counts
 #'
-#'@param BaseCounts A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromSingleBam}} or \code{\link{baseCountsFromBamList}}
+#'@param BaseCounts A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromBamList}}
 #'@param vars Character vector of variants to pull, in format 5643G>T
 #'@param cells Character vector for cells to select, or NULL if all cells from the input are to be used
 #'@return A list with two entries, M (count table on the variant allele) and N (count table on the reference allele)

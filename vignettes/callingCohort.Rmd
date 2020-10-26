@@ -34,7 +34,7 @@ print(table(patient))
 
 ## Cohort-level variant calling
 
-We next use the \code{\link{mutationCallsFromCohort}} function to a) filter on coverage to include potentially noisy variants and b) compare allele frequencies between patients to remove variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events).
+We next use the \code{\link{mutationCallsFromCohort}} function to a) filter on coverage to exclude potentially noisy variants and b) compare allele frequencies between patients to remove variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events).
 
 ```{r pressure, echo=FALSE}
 result <- mutationCallsFromCohort(countTables, patient)
