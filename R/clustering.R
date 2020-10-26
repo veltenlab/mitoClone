@@ -18,11 +18,12 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, cores = 1, time =10000, 
   suppressWarnings(dir.create(tempfolder))
 
   usedata <- mutcalls@ternary[,mutcalls@cluster]
+  ##dir.create(file.path(tempfolder,'out'))
   write.table(usedata, file = file.path(tempfolder,"in.txt"), quote = F, sep="\t",
               row.names = gsub("[><_]","",rownames(usedata)),col.names = gsub("[><_]","",colnames(usedata)))
 
 
-  base <- system.file("extdata/python/PhISCS-I",package = "mitoseq")
+  base <- system.file("extdata/python/PhISCS-I",package = "mitoClone")
   command <- sprintf("%spython %s -SCFile %s -fn %.2f -fp %.2f -o %s -threads %d -time %d --drawTree",
                      ifelse(python_env =="", "", paste0(python_env,"; ")),
                      base, file.path(tempfolder,"in.txt"),
