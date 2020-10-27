@@ -27,6 +27,7 @@ print(head(countTables[[1]]))
 ```
 
 Finally, we parse out the patient that each cell in the list derives from. We also count the number of cells per patient.
+
 ```{r parsePatient, eval=F}
 patient <- gsub("_.+","",names(countTables))
 print(table(patient))
@@ -34,13 +35,12 @@ print(table(patient))
 
 ## Cohort-level variant calling
 
-We next use the \code{\link{mutationCallsFromCohort}} function to a) filter on coverage to exclude potentially noisy variants and b) compare allele frequencies between patients to remove variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events).
+We next use the `mutationCallsFromCohort` function to a) filter on coverage to exclude potentially noisy variants and b) compare allele frequencies between patients to remove variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events).
 
-```{r pressure, echo=FALSE}
+```{r pressure}
 result <- mutationCallsFromCohort(countTables, patient)
-##blacklist <- readRDS('/g/steinmetz/story/cancer/revisions/data/black_lists.RDS')
-#### MISSING: Further filtering step to get exactly the list of mutations used for P342 and HRK?? Was there further filtering using blacklist$three or blacklist$masked
-### MISSING: Blacklist creation to be made consistent
+print(colnames(result$P342@M))
+print(colnames(result$HRK@M))
 ```
 
 The result for patient P1 (`result$P342`) an P2 (`result$HRK`) serves as input into the vignette [Computation of phylogenetic trees and clustering of mutations](clustering.html). The blacklist (`result$blacklist`) serves as input into the vignette [Variant calling and validation](calling.html). We have added regions based on a conservative set of false-positive variants from our datsets and further trinucleotide repeats and softmased regions to this blacklist, since we observed that those tend to contain false positives as well. See the `blacklist` object provided as part of the package.

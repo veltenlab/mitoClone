@@ -9,8 +9,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 In this vignette, we demonstrate how to call true mitochondrial somatice variants from single-cell RNA-seq data **from single individuals**, and we further justify our filtering strategy using reference data. In particular, we here make use of a blacklist created in the vignette [Variant calling and blacklist creation (using cohort data)](callingCohort.html).
 
-
-
 ## Before you begin
 
 The functions documented in this vignette use count tables of variants in the mitochondrial genome as input. Such tables are created from bam files using the function `baseCountsFromBamList`.
@@ -26,30 +24,57 @@ The function `mutationCallsFromBlacklist` performs coverage-based filtering and 
 *   `min.num.samples` specifies the minimum number of mutant cells required for a variant to be kept.
 
 ```{r example,fig.width = 6, fig.height=4}
-LudwigFig5.Counts <- readRDS(url("http://steinmetzlab.embl.de/mutaseq/fig5data.RDS"))
+library(mitoseq)
+library(pheatmap)
+
+LudwigFig5.Counts <- readRDS(url("http://steinmetzlab.embl.de/mutaseq/fig5_mc_out.RDS"))
+
 LudwigFig5 <- mutationCallsFromBlacklist(LudwigFig5.Counts,min.af=0.05, min.num.samples=5, universal.var.cells = 0.5 * length(LudwigFig5.Counts), binarize = 0.1)
 
 LudwigFig5.Meta <- data.frame(row.names = rownames(LudwigFig5@N), Clone = gsub("_.*","",gsub("Donor1_","",rownames(LudwigFig5@N))))
+
 clustered <- quick_cluster(LudwigFig5, binarize = T, drop_empty = T, clustering.method = "ward.D2", annotation_col = LudwigFig5.Meta,show_colnames=F,fontsize_row = 7)
-cut <- cutree(clustered$tree_col, k = 50)
-tree <- sapply(unique(cut), function(id) table(LudwigFig5.Meta[names(which(cut == id)),"Clone"])/sum(cut==id))
-colnames(tree) <- as.character(1:ncol(tree))
-pheatmap(tree[order(apply(tree,1,max)),], cluster_rows = F, cluster_cols = F,border_color = NA, fontsize_col = 7)
-# 
-# supervised.variants <- c("9508 T>C","781 T>C","15640 T>C","2467 T>C","8979 T>C","14356 T>C","10192 T>C","12737 G>A","6713 A>G","11643 G>A","1084 A>G","4654 A>G","2983 A>G","2625 A>G","6051 T>C","13328 A>G","3777 G>A","15004 G>A","12566 T>C","10587 G>A","7276 T>C","8382 T>C","13094 G>A","14094 T>C","3745 A>G","14306 G>A","12561 A>G","7341 G>A","11457 G>A","10167 T>C","7589 G>A","5915 A>G","7755 G>A","7661 T>C","7055 G>A","2648 G>A","11563 G>A","6575 G>A","6505 G>A","10681 G>A","3242 A>C","3935 G>A","4771 G>A","11623 A>C","8015 A>G","6758 T>C","3996 A>G","1448 A>G","9911 T>C")
-# 
-# hand.selected <- pullcounts.vars(LudwigFig5.Counts, supervised.variants, shift=-1)
-# hand.selected <- mutationCallsFromMatrix(t(hand.selected$M), t(hand.selected$N), cluster = rep(T, length(supervised.variants)), binarize = 0.05)
-# 
-# LudwigFig5.Meta <- data.frame(row.names = rownames(hand.selected@N), Clone = gsub("_.*","",gsub("Donor1_","",rownames(hand.selected@N))))
-# af <- hand.selected@M / (hand.selected@M + hand.selected@N)
-# af <- af[order(LudwigFig5.Meta$Clone),]
-# pheatmap(t(af), cluster_rows = F,cluster_cols = F , annotation_col = LudwigFig5.Meta )
 
-# #compare to PhISCS output
-# LudwigFig5 <- muta_cluster(LudwigFig5, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=6, tempfolder = "/g/steinmetz/project/singcellTxn/AML/MitochondriaRevisions/package/runs/Ludwig5/")
+```
 
-# phisics.out <- read.table("/g/steinmetz/project/singcellTxn/AML/MitochondriaRevisions/package/runs/Ludwig5/out/in.CFMatrix",header=T, row.names = 1)
-#  LudwigFig5.Meta <- data.frame(row.names = rownames(phisics.out), Clone = gsub("S.*","",gsub("Donor1_","",rownames(phisics.out))))
-#  pheatmap(t(phisics.out) , annotation_col = LudwigFig5.Meta )
+## Example Ludwig et al., Figure 7
+
+For this figure, we first recapitulate the analysis by Ludwig et al., who performed unsupervised clustering using a set of variants identified by DNA sequencing.
+
+```{r fig7orig,fig.width = 6, fig.height=4}
+## this is the Fig7 A/B data it is only the single cells from the Tumor samples (see bottom arrow of Fig7A) - It looks very messay and the healthy comparison is bulk sequencing (let me know if you think I should follow up)
+LudwigFig7.Counts <- readRDS(url("http://steinmetzlab.embl.de/mutaseq/fig7_nucleotide_counts_per_position.RDS"))
+
+
+supervised.variants <- c("9000 T>C","4819 G>A","11127 G>A","7229 A>G","5921 G>A","15735 G>A","15044 G>A","14866 G>A","6735 G>A","12651 T>C","14805 G>A")
+shifted.pos <- as.integer(gsub(" .+","",supervised.variants)) - 1
+basechange <- gsub("\\d+ ","",supervised.variants)
+supervised.variants.shifted <- paste(shifted.pos, basechange)
+ hand.selected <- pullcounts.vars(LudwigFig7.Counts, supervised.variants, shift=-1)
+ hand.selected <- mutationCallsFromMatrix(t(hand.selected$M), t(hand.selected$N), cluster = rep(T, length(supervised.variants)))
+
+ clustered.hand <- quick_cluster(hand.selected, binarize = T, drop_empty = T, clustering.method = "ward.D2",fontsize_row = 7, show_colnames=F, cutree_cols = 12, cluster_distance_col = "manhattan")
+ 
+  orig.anno <- data.frame(row.names = names(cutree(clustered.hand$tree_col, k=12)), Clone = as.factor(cutree(clustered.hand$tree_col, k=12)))
+
+```
+
+
+Then, we call mitochondrial variants de novo and cluster using the `muta_cluster` function, as described in more detail in the [Computation of phylogenetic trees and clustering of mutations](clustering.html) vignette.
+
+Of note, in this dataset there is quite a large number of variants present in all cells but at low heteroplasmy, justifying the use of a different `universal.var.cells` parameter.
+
+```{r fig7new,fig.width = 6, fig.height=4}
+ LudwigFig7 <- mutationCallsFromBlacklist(LudwigFig7.Counts,min.af=0.1, min.num.samples=3, universal.var.cells = 0.25 * length(LudwigFig7.Counts), binarize = 0.1)
+
+ LudwigFig7 <- muta_cluster(LudwigFig7, python_env = "module load Anaconda3/2019.07; source activate gurobi",cores=10,
+                                  tempfolder = "/g/steinmetz/project/singcellTxn/AML/MitochondriaRevisions/package/runs/LudwigFig7")
+
+  LudwigFig7@metadata$original <- factor(NA, levels = unique(orig.anno$Clone))
+ LudwigFig7@metadata[rownames(orig.anno), "original"] <- orig.anno$Clone
+ 
+ LudwigFig7 <- clusterMetaclones(LudwigFig7, plot = F)
+ 
+ plotClones(LudwigFig7)
+ 
 ```
