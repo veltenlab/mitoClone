@@ -28,7 +28,7 @@ muta_cluster(
 
 \item{tempfolder}{temporary folder to use for PhISCS output}
 
-\item{python_env}{Any shell commands to execute in order to make the gurobi python package availabler, such as \code{source activate myenv}}
+\item{python_env}{Any shell commands to execute in order to make the gurobi python package available. The easiest solution is running R from an environment where the gurobi python package is avaiable. In some settings (e.g. RStudio Server), this parameter can be used instead. \code{muta_clone} executes PhISCS using a \code{system} call to python. The value of this parameter is prepended to the call. If you have a conda environment \code{myenv} that contains gurobipy, \code{source activate myenv} can work. Occassionally RStudio Server modifies your PATH so that that the conda and source commands are not available. In that case you can for example use \code{export PATH=/path/to/conda/:$PATH; source activate myenv}. easybuild users can \code{module load anaconda/v3; source activate myenv}}
 
 \item{force_recalc}{Rerun PhISCS even if the \code{tempfolder} contains valid PhISCS output}
 }
