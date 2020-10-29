@@ -36,8 +36,10 @@ P2@cluster["X2392TC"] <- F
 The next step is to run [PhISCS](https://github.com/sfu-compbio/PhISCS) to compute the most likely phylogenetic tree. PhISCS is bundled in this package, but the package needs to be run in an environment where [gurobi](https://www.gurobi.com) and the `gurobipy` python package are available. For example, you could set up a `conda` environment that contains this package. Please be sure to set the *python_env* variable appropriately for accessing your installation of gurobipy.
 
 ```{r runPhiscs}
-P1 <- muta_cluster(P1, cores=4, tempfolder = paste0(getwd(),"/P342debug"))
-P2 <- muta_cluster(P2, cores=4, tempfolder = paste0(getwd(),"/P101debug"))
+P1 <- readRDS('~/Downloads/P1.RDS')
+P2 <- readRDS('~/Downloads/P2.RDS')
+##P1 <- muta_cluster(P1, cores=4, tempfolder = paste0(getwd(),"/P342debug"))
+##P2 <- muta_cluster(P2, cores=4, tempfolder = paste0(getwd(),"/P101debug"))
 ```
 
 This step can take a while to run. It computes a likely phylogenetic tree of all the mutations. If you have graphviz (`dot`) installed, you can create postscript files displaying these plots:

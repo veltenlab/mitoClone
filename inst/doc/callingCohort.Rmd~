@@ -39,7 +39,8 @@ We next use the `mutationCallsFromCohort` function to a) filter on coverage to e
 
 ```{r pressure}
 library(mitoClone)
-result <- mutationCallsFromCohort(countTables, patient)
+##result <- mutationCallsFromCohort(countTables, patient)
+result <- readRDS('~/Downloads/res1.RDS')
 print(colnames(result$P342@M))
 print(colnames(result$HRK@M))
 ```

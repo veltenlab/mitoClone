@@ -22,8 +22,8 @@ NULL
 #' Blacklist of variants that are likely not true somatic mutations
 #' @format A list with three entries:
 #' #' \itemize{
-#'   \item \emph{three} **explanations ben**
-#'   \item \emph{mutaseq} **explanations ben**
-#'   \item \emph{masked} **explanations ben**
+#'   \item \emph{three}: Regions of the mitochondrial genome that are within 1 nt of a 3-mer homopolymer (e.g. AAA)
+#'   \item \emph{mutaseq}: Mutations in the mitochondrial genome that were reoccuring across patients (present in more than one individual in the MutaSeq dataset)
+#'   \item \emph{masked}: Regions of the mitochondrial genome that are soft-masked in the UCSC or Ensembl annotations
 #' }
 "blacklists"

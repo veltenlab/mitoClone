@@ -1,33 +1,7 @@
----
-title: "Variant calling and validation"
-output: html_document
-vignette: >
-  %\VignetteIndexEntry{Variant calling and validation}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
----
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-In this vignette, we demonstrate how to call true mitochondrial somatice variants from single-cell RNA-seq data **from single individuals**, and we further justify our filtering strategy using reference data. In particular, we here make use of a blacklist created in the vignette [Variant calling and blacklist creation (using cohort data)](callingCohort.html).
-
-## Before you begin
-
-The functions documented in this vignette use count tables of variants in the mitochondrial genome as input. Such tables are created from bam files using the function `baseCountsFromBamList`.
-
-## Example Ludwig et al., Figure 5
-
-The function `mutationCallsFromBlacklist` performs coverage-based filtering and then removes blacklisted variants. Some notes about its parameters:
-
-*   `min.af` is the minimal heteroplasmy (allele frequency) for a site to be considered mutant in a single cell. Depending on its value and the dataset, you will sometimes include variants that are present in all cells, but at a low heteroplasmy.
-
-*   `universal.var.cells` can be used to remove such variants, since it removes all variants classified as mutant in at least this number of cells (here, 50% of cells)
-
-*   `min.num.samples` specifies the minimum number of mutant cells required for a variant to be kept.
-
-```{r example,fig.width = 6, fig.height=4}
+## ----example,fig.width = 6, fig.height=4--------------------------------------
 library(mitoClone)
 library(pheatmap)
 
@@ -39,13 +13,8 @@ LudwigFig5.Meta <- data.frame(row.names = rownames(LudwigFig5@N), Clone = gsub("
 
 clustered <- quick_cluster(LudwigFig5, binarize = T, drop_empty = T, clustering.method = "ward.D2", annotation_col = LudwigFig5.Meta,show_colnames=F,fontsize_row = 7)
 
-```
 
-## Example Ludwig et al., Figure 7
-
-For this figure, we first recapitulate the analysis by Ludwig et al., who performed unsupervised clustering using a set of variants identified by DNA sequencing.
-
-```{r fig7orig,fig.width = 6, fig.height=4}
+## ----fig7orig,fig.width = 6, fig.height=4-------------------------------------
 ## this is the Fig7 A/B data it is only the single cells from the Tumor samples (see bottom arrow of Fig7A) - It looks very messay and the healthy comparison is bulk sequencing (let me know if you think I should follow up)
 LudwigFig7.Counts <- readRDS(url("http://steinmetzlab.embl.de/mutaseq/fig7_nucleotide_counts_per_position.RDS"))
 
@@ -61,14 +30,8 @@ clustered.hand <- quick_cluster(hand.selected, binarize = T, drop_empty = T, clu
  
 orig.anno <- data.frame(row.names = names(cutree(clustered.hand$tree_col, k=12)), Clone = as.factor(cutree(clustered.hand$tree_col, k=12)))
 
-```
 
-
-Then, we call mitochondrial variants de novo and cluster using the `muta_cluster` function, as described in more detail in the [Computation of phylogenetic trees and clustering of mutations](clustering.html) vignette.
-
-Of note, in this dataset there is quite a large number of variants present in all cells but at low heteroplasmy, justifying the use of a different `universal.var.cells` parameter.
-
-```{r fig7new,fig.width = 6, fig.height=4}
+## ----fig7new,fig.width = 6, fig.height=4--------------------------------------
 LudwigFig7 <- mutationCallsFromBlacklist(LudwigFig7.Counts,min.af=0.1, min.num.samples=3, universal.var.cells = 0.25 * length(LudwigFig7.Counts), binarize = 0.1)
 LudwigFig7 <- muta_cluster(LudwigFig7, cores=10,tempfolder = paste0(getwd(),"/LudwigFig7"))
 
@@ -79,4 +42,4 @@ LudwigFig7 <- clusterMetaclones(LudwigFig7, plot = F)
  
 plotClones(LudwigFig7)
  
-```
+

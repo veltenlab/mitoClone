@@ -1,15 +1,15 @@
-#'Create a mutationCalls object from a list of single-cell BAM files
+#'Create a list object from a list of single-cell BAM files where each contains a matrix of the of AGCT nt counts at chosen sites
 #'
 #'Uses the \code{deepSNV} package to count nucleotide frequencies at every position in the mitochondrial genome for every cell and passes the result to the \code{\link{mutationCallsFromDeepSNV}} function for filtering variants.
-#'@param bamfiles A character vector specifyign the bam file paths
+#'@param bamfiles A character vector specifying the bam file paths
 #'@param sites Vector specifying genomic regions, defaults to the entire mitochondrial genome.
 #'@param ncores Number of threads to use for the computation
 #'@return A list of base count matrices which can serve as an input to \code{\link{mutationCallsFromBlacklist}} or \code{\link{mutationCallsFromCohort}}
 #'@export
 baseCountsFromBamList <- function(bamfiles, sites = "chrM:1-16659", ncores=20) {
     mito.chr <- GRanges(sites)
-    mc.out <- mclapply(bamfiles, function(bampath){
-        bam.file <- bam2R(bampath, chr = seqnames(mito.chr),start = start(mito.chr), stop = end(mito.chr))
+    mc.out <- parallel:::mclapply(bamfiles, function(bampath){
+        bam.file <- deepSNV:::bam2R(bampath, chr = GenomeInfoDb:::seqnames(mito.chr),start = BiocGenerics:::start(mito.chr), stop = BiocGenerics:::end(mito.chr))
         bam.file.sub <- bam.file[,12:19]
         bam.file <- bam.file[,1:8]
         bam.file <- bam.file + bam.file.sub
@@ -18,20 +18,6 @@ baseCountsFromBamList <- function(bamfiles, sites = "chrM:1-16659", ncores=20) {
     names(mc.out) <- names(bamfiles)
     return(mc.out)
 }
-
-
-## #'Create a mutationCalls object from a list of single-cell BAM files
-## #'
-## #'More explanations of what happens
-## #'@param bam Path to the bam file
-## #'@param sites Vector specifying genomic regions, defaults to the entire mitochondrial genome. Can be modified to query nuclear mutations
-## #'@param tag Name of the bam file tag
-## #'@return A list of base count matrices which can serve as an input to \code{\link{mutationCallsFromBlacklist}} or \code{\link{mutationCallsFromCohort}}
-## remove xport call
-## baseCountsFromSingleBam <- function(bam, sites = "chrM:1-16659", tag = "XQ:C") {
-
-
-## }
 
 #'Create a mutationCalls objects from nucleotide base calls and defines a blacklist (cohort)
 #'

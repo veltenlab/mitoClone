@@ -1,1 +1,6 @@
 exportPattern("^[[:alpha:]]+")
+importFrom("grDevices", "colorRampPalette")
+importFrom("graphics", "par")
+importFrom("stats", "cutree", "dist", "end", "hclust", "start")
+importFrom("utils", "read.csv", "read.table", "write.table")
+

@@ -12,7 +12,7 @@
 #'@param force_recalc Rerun PhISCS even if the \code{tempfolder} contains valid PhISCS output
 #'@return an object of class \code{\link{mutationCalls}}, with an inferred tree structure and cell to clone assignment added.
 #'@export
-muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, cores = 1, time =10000, tempfolder = tempdir(), python_env = "", force_recalc = F) {
+muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, cores = 1, time =10000, tempfolder = tempdir(), python_env = '', force_recalc = F) {
 
   #prepare data and run PhISCS
   suppressWarnings(dir.create(tempfolder))
@@ -76,12 +76,12 @@ muta_cluster <- function(mutcalls, fn = 0.1, fp = 0.02, cores = 1, time =10000, 
                               ifelse(data == "?", 1, (1-fn) * (1-fp))))))
     }
 
-    ref <- evaluate_likelihood(usedata, physics)
+    ref <- evaluate_likelihood(usedata[,colnames(physics)], physics)
     mutcalls@treeLikelihoods <- sapply(colnames(physics), function(node1) {
       sapply(c(colnames(physics),"root"), function(node2) {
         newmodel <- physics
         if (node2 == "root") newmodel[,node1] <- rep(0, nrow(newmodel)) else newmodel[,node1] <- newmodel[,node2]
-        evaluate_likelihood(usedata, newmodel) - ref
+        evaluate_likelihood(usedata[,colnames(physics)], newmodel) - ref
       })
     })
 

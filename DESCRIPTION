@@ -1,6 +1,7 @@
 Package: mitoClone
 Type: Package
-Title: Clonal tracking in single-cell RNA-seq data using mitochondrial and somatic mutations
+Title: Clonal tracking in single-cell RNA-seq data using mitochondrial
+        and somatic mutations
 Version: 0.1.0
 Author: Lars Velten, Ben Story
 Maintainer: Lars Velten <lars.velten@crg.eu>
@@ -9,11 +10,12 @@ Description: This package identifies somatic variants in mitochondrial genomes f
     estimates their evolutionary relationship (i.e. their phylogenetic tree);
     and finally groups single cells into clones using a probabilistic approach.
 License: GPLv3
+VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
-Imports:
-    reshape2,
-    GenomicRanges,
-    pheatmap,
-    deepSNV
+Imports: reshape2, GenomicRanges, pheatmap, deepSNV
+Suggests: knitr, rmarkdown
 RoxygenNote: 7.1.0
+NeedsCompilation: no
+Packaged: 2020-10-29 14:29:55 UTC; story
+Depends: R (>= 3.5.0)

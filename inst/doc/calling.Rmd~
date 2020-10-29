@@ -33,7 +33,8 @@ library(pheatmap)
 
 LudwigFig5.Counts <- readRDS(url("http://steinmetzlab.embl.de/mutaseq/fig5_mc_out.RDS"))
 
-LudwigFig5 <- mutationCallsFromBlacklist(LudwigFig5.Counts,min.af=0.05, min.num.samples=5, universal.var.cells = 0.5 * length(LudwigFig5.Counts), binarize = 0.1)
+##LudwigFig5 <- mutationCallsFromBlacklist(LudwigFig5.Counts,min.af=0.05, min.num.samples=5, universal.var.cells = 0.5 * length(LudwigFig5.Counts), binarize = 0.1)
+LudwigFig5 <- readRDS('~/Downloads/lud5.RDS')
 
 LudwigFig5.Meta <- data.frame(row.names = rownames(LudwigFig5@N), Clone = gsub("_.*","",gsub("Donor1_","",rownames(LudwigFig5@N))))
 
@@ -69,8 +70,10 @@ Then, we call mitochondrial variants de novo and cluster using the `muta_cluster
 Of note, in this dataset there is quite a large number of variants present in all cells but at low heteroplasmy, justifying the use of a different `universal.var.cells` parameter.
 
 ```{r fig7new,fig.width = 6, fig.height=4}
-LudwigFig7 <- mutationCallsFromBlacklist(LudwigFig7.Counts,min.af=0.1, min.num.samples=3, universal.var.cells = 0.25 * length(LudwigFig7.Counts), binarize = 0.1)
-LudwigFig7 <- muta_cluster(LudwigFig7, cores=10,tempfolder = paste0(getwd(),"/LudwigFig7"))
+##LudwigFig7 <- mutationCallsFromBlacklist(LudwigFig7.Counts,min.af=0.1, min.num.samples=3, universal.var.cells = 0.25 * length(LudwigFig7.Counts), binarize = 0.1)
+##LudwigFig7 <- muta_cluster(LudwigFig7, cores=10,tempfolder = paste0(getwd(),"/LudwigFig7"))
+
+LudwigFig7 <- readRDS('~/Downloads/lud7.RDS')
 
 LudwigFig7@metadata$original <- factor(NA, levels = unique(orig.anno$Clone))
 LudwigFig7@metadata[rownames(orig.anno), "original"] <- orig.anno$Clone

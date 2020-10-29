@@ -119,7 +119,7 @@ P2<span class="op">@</span>cluster[<span class="st">&quot;X2392TC&quot;</span>] 
 <div id="compute-a-phylogenetic-tree" class="section level2">
 <h2>Compute a phylogenetic tree</h2>
 <p>The next step is to run <a href="https://github.com/sfu-compbio/PhISCS">PhISCS</a> to compute the most likely phylogenetic tree. PhISCS is bundled in this package, but the package needs to be run in an environment where <a href="https://www.gurobi.com">gurobi</a> and the <code>gurobipy</code> python package are available. For example, you could set up a <code>conda</code> environment that contains this package. Please be sure to set the <em>python_env</em> variable appropriately for accessing your installation of gurobipy.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">P1 &lt;-<span class="st"> </span>
 P1 &lt;- muta_cluster(P1, cores=4, tempfolder = paste0(getwd(),&quot;/P342debug&quot;))
 P2 &lt;- muta_cluster(P2, cores=4, tempfolder = paste0(getwd(),&quot;/P101debug&quot;))</code></pre></div>
 <p>This step can take a while to run. It computes a likely phylogenetic tree of all the mutations. If you have graphviz (<code>dot</code>) installed, you can create postscript files displaying these plots:</p>

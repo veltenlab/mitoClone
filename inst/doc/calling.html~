@@ -210,7 +210,8 @@ library(pheatmap)
 
 LudwigFig5.Counts &lt;- readRDS(url(&quot;http://steinmetzlab.embl.de/mutaseq/fig5_mc_out.RDS&quot;))
 
-LudwigFig5 &lt;- mutationCallsFromBlacklist(LudwigFig5.Counts,min.af=0.05, min.num.samples=5, universal.var.cells = 0.5 * length(LudwigFig5.Counts), binarize = 0.1)
+##LudwigFig5 &lt;- mutationCallsFromBlacklist(LudwigFig5.Counts,min.af=0.05, min.num.samples=5, universal.var.cells = 0.5 * length(LudwigFig5.Counts), binarize = 0.1)
+LudwigFig5 &lt;- readRDS('~/Downloads/lud5.RDS')
 
 LudwigFig5.Meta &lt;- data.frame(row.names = rownames(LudwigFig5@N), Clone = gsub(&quot;_.*&quot;,&quot;&quot;,gsub(&quot;Donor1_&quot;,&quot;&quot;,rownames(LudwigFig5@N))))
 
@@ -236,8 +237,10 @@ clustered.hand &lt;- quick_cluster(hand.selected, binarize = T, drop_empty = T, 
 <pre class="r"><code>orig.anno &lt;- data.frame(row.names = names(cutree(clustered.hand$tree_col, k=12)), Clone = as.factor(cutree(clustered.hand$tree_col, k=12)))</code></pre>
 <p>Then, we call mitochondrial variants de novo and cluster using the <code>muta_cluster</code> function, as described in more detail in the <a href="clustering.html">Computation of phylogenetic trees and clustering of mutations</a> vignette.</p>
 <p>Of note, in this dataset there is quite a large number of variants present in all cells but at low heteroplasmy, justifying the use of a different <code>universal.var.cells</code> parameter.</p>
-<pre class="r"><code>LudwigFig7 &lt;- mutationCallsFromBlacklist(LudwigFig7.Counts,min.af=0.1, min.num.samples=3, universal.var.cells = 0.25 * length(LudwigFig7.Counts), binarize = 0.1)
-LudwigFig7 &lt;- muta_cluster(LudwigFig7, cores=10,tempfolder = paste0(getwd(),&quot;/LudwigFig7&quot;))
+<pre class="r"><code>##LudwigFig7 &lt;- mutationCallsFromBlacklist(LudwigFig7.Counts,min.af=0.1, min.num.samples=3, universal.var.cells = 0.25 * length(LudwigFig7.Counts), binarize = 0.1)
+##LudwigFig7 &lt;- muta_cluster(LudwigFig7, cores=10,tempfolder = paste0(getwd(),&quot;/LudwigFig7&quot;))
+
+LudwigFig7 &lt;- readRDS('~/Downloads/lud7.RDS')
 
 LudwigFig7@metadata$original &lt;- factor(NA, levels = unique(orig.anno$Clone))
 LudwigFig7@metadata[rownames(orig.anno), &quot;original&quot;] &lt;- orig.anno$Clone
