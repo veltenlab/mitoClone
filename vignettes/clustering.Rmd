@@ -1,5 +1,5 @@
 ---
-title: "Computation of phylogenetic trees and clustering of mutations"
+title: "Computation of clonal hierarchies and clustering of mutations"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Computation of phylogenetic trees and clustering of mutations}
@@ -49,16 +49,19 @@ plotTree(P2, file = "P2.ps")
 
 ## Identify clones and assign cells to clones
 
-In many cases, the order of the leaves on these trees is arbitrary, because mutations systematically co-occur. We  therefore cluster the mutations into clones. In detail, we take every every branch on the tree and then shuffle the order of mutations in that branch while re-calculating the likelihood. If swapping nodes leads to small changes in the likelihood, these nodes are then merged into a "clone". The parameter `min.lik` controls the merging and can be adjusted after inspection of the dendrograms. This step also assigns each cell to the most likely clone, and provides an estimate of the likelihood. The `help(mutationCalls)` for more info on how these results are stored.
+In many cases, the order of the leaves on these trees is arbitrary, because mutations systematically co-occur. We  therefore cluster the mutations into clones. In detail, we take every every branch on the tree and then shuffle the order of mutations in that branch while re-calculating the likelihood. If swapping nodes leads to small changes in the likelihood, these nodes are then merged into a "clone". The parameter `min.lik` that controls the merging is set arbitrarily, see below for more information. 
 
 ```{r clusterClonesP1, fig.width=8,fig.height=6}
-P1 <- clusterMetaclones(P1)
+P1 <- clusterMetaclones(P1, min.lik =1)
 ```
 
 
 ```{r clusterClonesP2, fig.width=8,fig.height=6}
-P2 <- clusterMetaclones(P2)
+P2 <- clusterMetaclones(P2, min.lik =1)
 ```
+
+
+This step also assigns each cell to the most likely clone, and provides an estimate of the likelihood. The `help(mutationCalls)` for more info on how these results are stored.
 
 Finally, the clustering can be plotted.
 
@@ -71,3 +74,23 @@ plotClones(P1)
 plotClones(P2)
 ```
 
+## Parameter choice
+
+The parameter `min.lik` that controls the merging is set arbitrarily. In practice, the goal of these analyses is to group mutations into clones for subsequent analyses (such as differential expression analyses) and it may make sense to overwrite the result of `clusterMetaclones` manually; for example, if a subclone defned on a mitochondrial mutation only should be treated as part of a more clearly defined upstream clone for differential expression analysis.
+
+To overwrite the result of `clusterMetaclones`, first retrieve the assignment of mutations to clones:
+
+```{r getmut2clone}
+m2c <- getMut2Clone(P1)
+print(m2c)
+```
+
+To e.g. treat the mt:2537G>A and mt:14462:G>A mutations as a subclone distinct from CEBPA, we can assign a new clonal identity to them while respecting the hierarchy:
+
+```{r getmut2clone, fig.width=8,fig.height=6}
+m2c[c("X2537GA","X14462GA")] <- as.integer(6)
+P1.new <- overwriteMetaclones(P1, m2c)
+plotClones(P1.new)
+```
+
+ 

@@ -123,4 +123,6 @@ getMainClone <- function(mutcall, mainClones = length(mutcall@mut2clone) > 0) as
 #' @describeIn getCloneLikelihood Retrieve the likelihood of the most likely clone for each cell.
 getConfidence <- function(mutcall, mainClones = length(mutcall@mut2clone) > 0) as.factor(apply(getCloneLikelihood(mutcall, mainClones = mainClones), 1, max))
 
+#' @describeIn getCloneLikelihood Retrieve the assignment of mutations to clones, once \code{\link{clusterMetaclones}} has been run.
+getMut2Clone <- function(mutcall) mutcall@mut2clone
 

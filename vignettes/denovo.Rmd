@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Once you have identified clones from mitochondrial and known nuclear somatic variants by following the vignette for [Computation of phylogenetic trees and clustering of mutation](clustering.html), you can attempt to identify new mutations from expressed nuclear genes by following this vignette.
+Once you have identified clones from mitochondrial and known nuclear somatic variants by following the vignette for [Computation of clonal hierarchies and clustering of mutations](clustering.html), you can attempt to identify new mutations from expressed nuclear genes by following this vignette.
 
 ## Before you begin
 
@@ -75,7 +75,7 @@ likeli.clas <- function(params, data, clones) {
 }
 ```
 
-The clonal identity of each cell is obtained by following the [Computation of phylogenetic trees and clustering of mutation](clustering.html) vignette for P1.
+The clonal identity of each cell is obtained by following the [Computation of clonal hierarchies and clustering of mutation](clustering.html) vignette for P1.
 
 ```{r getclone, eval=F}
 clone <- apply(P1@mainClone,1,which.max)

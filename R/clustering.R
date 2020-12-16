@@ -128,7 +128,7 @@ quick_cluster <- function(mutcalls, binarize = F,drop_empty =T,  ...) {
 #'
 #'PhISCS orders all mutations into a hierarchical mutational tree; in many cases, the exact order of the acquisition of individual mutations in not unanimously determined from the data. This function computes the change in likelihood of the infered clonal assignment if two mutations are merged into a clone. Hierarchical clustering is then used to determine the clonal structure. The result is visualized and should be fine-tuned using the \code{min.lik} parameter.
 #'@param mutcalls mutcalls object of class \code{\link{mutationCalls}} for which \code{\link{muta_cluster}} has been run
-#'@param min.lik specifies the minimum difference in likelihood required
+#'@param min.lik specifies the minimum difference in likelihood required. This parameter is set arbitrarily, see the vignette "Computation of clonal hierarchies and clustering of mutations" for more information.
 #'@param plot whether dendrograms should be plotted.
 #'
 #'@export
@@ -159,8 +159,26 @@ clusterMetaclones <- function(mutcalls, min.lik = 1, plot = T) {
   use <- mutcalls@mut2clone[colnames(mutcalls@cell2clone)]
   mutcalls@mainClone <- sapply(unique(use), function(mainClone) {
     if (sum(use == mainClone) == 1) mutcalls@cell2clone[,use == mainClone] else apply(mutcalls@cell2clone[,use == mainClone], 1, sum)
-  }) #there is a problem here because cell2clone does not have the exact same length a mut2clone (identical muts were already excluded)
+  })
 
+  return(mutcalls)
+}
+
+#'Manually overwrite clustering of mutations into clones
+#'
+#'The function \code{\link{clusterMetaclones}} provides an automated way to group mutations into clones for subsequent analyses (such as differential expression analyses). In practice, it may make sense to overwrite these results manually. See the vignette 'Computation of clonal hierarchies and clustering of mutations' for an example.
+#'@param mutcalls mutcalls object of class \code{\link{mutationCalls}} for which \code{\link{clusterMetaclones}} has been run
+#'@param mutation2clones Named integer vector that assigns mutations to clones. See the vignette 'Computation of clonal hierarchies and clustering of mutations' for an example.
+#'
+#'@export
+overwriteMetaclones <- function(mutcalls, mutation2clones) {
+  #split the tree into branches with no further splits
+  mutcalls@mut2clone <- mutation2clones
+  use <- mutcalls@mut2clone[colnames(mutcalls@cell2clone)]
+  mutcalls@mainClone <- sapply(unique(use), function(mainClone) {
+    if (sum(use == mainClone) == 1) mutcalls@cell2clone[,use == mainClone] else apply(mutcalls@cell2clone[,use == mainClone], 1, sum)
+  })
+  
   return(mutcalls)
 }
 

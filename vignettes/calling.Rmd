@@ -66,7 +66,7 @@ orig.anno <- data.frame(row.names = names(cutree(clustered.hand$tree_col, k=12))
 ```
 
 
-Then, we call mitochondrial variants de novo and cluster using the `muta_cluster` function, as described in more detail in the [Computation of phylogenetic trees and clustering of mutations](clustering.html) vignette.
+Then, we call mitochondrial variants de novo and cluster using the `muta_cluster` function, as described in more detail in the [Computation of clonal hierarchies and clustering of mutations](clustering.html) vignette.
 
 Of note, in this dataset there is quite a large number of variants present in all cells but at low heteroplasmy, justifying the use of a different `universal.var.cells` parameter.
 

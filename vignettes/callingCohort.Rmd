@@ -44,7 +44,7 @@ print(colnames(result$P342@M))
 print(colnames(result$HRK@M))
 ```
 
-The result for patient P1 (`result$P342`) an P2 (`result$HRK`) serves as input into the vignette [Computation of phylogenetic trees and clustering of mutations](clustering.html). The blacklist (`result$blacklist`) serves as input into the vignette [Variant calling and validation](calling.html). We have added regions based on a conservative set of false-positive variants from our datsets and further trinucleotide repeats and softmased regions to this blacklist, since we observed that those tend to contain false positives as well. See the `blacklist` object provided as part of the package.
+The result for patient P1 (`result$P342`) an P2 (`result$HRK`) serves as input into the vignette [Computation of clonal hierarchies and clustering of mutations](clustering.html). The blacklist (`result$blacklist`) serves as input into the vignette [Variant calling and validation](calling.html). We have added regions based on a conservative set of false-positive variants from our datsets and further trinucleotide repeats and softmased regions to this blacklist, since we observed that those tend to contain false positives as well. See the `blacklist` object provided as part of the package.
 
 ## Notes on parameter choice
 
