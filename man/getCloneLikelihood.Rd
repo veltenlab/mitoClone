@@ -3,11 +3,14 @@
 \name{getCloneLikelihood}
 \alias{getCloneLikelihood}
 \alias{getConfidence}
+\alias{getMut2Clone}
 \title{mutationCalls accessors}
 \usage{
 getCloneLikelihood(mutcall, mainClones = length(mutcall@mut2clone) > 0)
 
-getConfidence(mutcalls, mainClones = length(mutcall@mut2clone) > 0)
+getConfidence(mutcall, mainClones = length(mutcall@mut2clone) > 0)
+
+getMut2Clone(mutcall)
 }
 \arguments{
 \item{mutcall}{object of class \code{\link{mutationCalls}}.}
@@ -22,5 +25,7 @@ Retrieves the full matrix of likelihoods associating single cells with clones
 \item \code{getCloneLikelihood}: Retrieve the most likely clone associate with each cell.
 
 \item \code{getConfidence}: Retrieve the likelihood of the most likely clone for each cell.
+
+\item \code{getMut2Clone}: Retrieve the assignment of mutations to clones, once \code{\link{clusterMetaclones}} has been run.
 }}
 

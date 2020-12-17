@@ -4,21 +4,14 @@
 \alias{mutationCallsFromBlacklist}
 \title{Create a mutationCalls object from nucleotide base calls using a blacklist (single individual)}
 \usage{
-mutationCallsFromBlacklist(
-  BaseCounts,
-  lim.cov = 20,
-  min.af = 0.2,
+mutationCallsFromBlacklist(BaseCounts, lim.cov = 20, min.af = 0.2,
   min.num.samples = 0.01 * length(BaseCounts),
-  min.af.universal = min.af,
-  universal.var.cells = 0.95 * length(BaseCounts),
-  blacklists.use = blacklists,
-  max.var.na = 0.5,
-  max.cell.na = 0.95,
-  ...
-)
+  min.af.universal = min.af, universal.var.cells = 0.95 *
+  length(BaseCounts), blacklists.use = blacklists, max.var.na = 0.5,
+  max.cell.na = 0.95, ...)
 }
 \arguments{
-\item{BaseCounts}{A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromSingleBam}} or \code{\link{baseCountsFromBamList}}}
+\item{BaseCounts}{A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromBamList}}}
 
 \item{lim.cov}{Minimal coverage required per cell for a cell to be classified as covered}
 
@@ -42,5 +35,5 @@ mutationCallsFromBlacklist(
 An object of class \code{\link{mutationCalls}}
 }
 \description{
-Identifies relevant mitochondrial somatic variants from raw counts of nucleotide frequencies. Applies two sets of filters: In the first step, filters on coverage and minimum allele frequency to include potentially noisy variants; in the second step, filters against a blacklist of variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events). These blacklists are created using \code{\link{mutationCallsFromCohort}}
+Identifies relevant mitochondrial somatic variants from raw counts of nucleotide frequencies. Applies two sets of filters: In the first step, filters on coverage and minimum allele frequency to exclude potentially noisy variants; in the second step, filters against a blacklist of variants that were observed in several individuals and that therefore are unlikely to represent true somatic variants (e.g. RNA editing events). These blacklists are created using \code{\link{mutationCallsFromCohort}}
 }

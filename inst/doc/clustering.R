@@ -22,14 +22,23 @@ plotTree(P1, file = "P1.ps")
 plotTree(P2, file = "P2.ps")
 
 ## ----clusterClonesP1, fig.width=8,fig.height=6--------------------------------
-P1 <- clusterMetaclones(P1)
+P1 <- clusterMetaclones(P1, min.lik =1)
 
 ## ----clusterClonesP2, fig.width=8,fig.height=6--------------------------------
-P2 <- clusterMetaclones(P2)
+P2 <- clusterMetaclones(P2, min.lik =1)
 
 ## ----plotClonesP1, fig.width=8,fig.height=6-----------------------------------
 plotClones(P1)
 
 ## ----plotClonesP2, fig.width=8,fig.height=6-----------------------------------
 plotClones(P2)
+
+## ----getmut2clone-------------------------------------------------------------
+m2c <- getMut2Clone(P1)
+print(m2c)
+
+## ----getmut2clone2, fig.width=8,fig.height=6----------------------------------
+m2c[c("X2537GA","X14462GA")] <- as.integer(6)
+P1.new <- overwriteMetaclones(P1, m2c)
+plotClones(P1.new)
 

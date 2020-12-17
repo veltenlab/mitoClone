@@ -2,14 +2,16 @@
 % Please edit documentation in R/mutationCalling.R
 \name{baseCountsFromBamList}
 \alias{baseCountsFromBamList}
-\title{Create a mutationCalls object from a list of single-cell BAM files}
+\title{Create a list object from a list of single-cell BAM files where each contains a matrix of the of AGCT nt counts at chosen sites}
 \usage{
-baseCountsFromBamList(bamfiles, sites = "chrM:1-16659")
+baseCountsFromBamList(bamfiles, sites = "chrM:1-16659", ncores = 20)
 }
 \arguments{
-\item{bamfiles}{A character vector specifyign the bam file paths}
+\item{bamfiles}{A character vector specifying the bam file paths}
 
-\item{sites}{Vector specifying genomic regions, defaults to the entire mitochondrial genome. Can be modified to query nuclear mutations}
+\item{sites}{Vector specifying genomic regions, defaults to the entire mitochondrial genome.}
+
+\item{ncores}{Number of threads to use for the computation}
 }
 \value{
 A list of base count matrices which can serve as an input to \code{\link{mutationCallsFromBlacklist}} or \code{\link{mutationCallsFromCohort}}

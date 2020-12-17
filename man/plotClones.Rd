@@ -4,7 +4,7 @@
 \alias{plotClones}
 \title{Plot clonal assignment of single cells}
 \usage{
-plotClones(mutcalls, what = "alleleRatio", show = !mutcalls@cluster, ...)
+plotClones(mutcalls, what = "alleleRatio", show = c(), ...)
 }
 \arguments{
 \item{mutcalls}{object of class \code{\link{mutationCalls}}.}

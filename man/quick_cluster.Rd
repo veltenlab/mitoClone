@@ -9,7 +9,7 @@ quick_cluster(mutcalls, binarize = F, drop_empty = T, ...)
 \arguments{
 \item{mutcalls}{object of class \code{\link{mutationCalls}}.}
 
-\item{binarize}{If \code{FALSE}, will use raw allele frequencies for the clustering. If \code{TRUE}, will use binarized mutation/reference/dropout calls. Alternatively, provide a function top create binarized mutation/reference/dropout calls from the matrices M and N, see \code{\link{mutationCallsFromMatrix}}}
+\item{binarize}{If \code{FALSE}, will use raw allele frequencies for the clustering. If \code{TRUE}, will use binarized mutation/reference/dropout calls.}
 
 \item{...}{Parameters passed to \code{\link{pheatmap::pheatmap}}}
 }

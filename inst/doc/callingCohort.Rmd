@@ -44,4 +44,48 @@ print(colnames(result$P342@M))
 print(colnames(result$HRK@M))
 ```
 
-The result for patient P1 (`result$P342`) an P2 (`result$HRK`) serves as input into the vignette [Computation of phylogenetic trees and clustering of mutations](clustering.html). The blacklist (`result$blacklist`) serves as input into the vignette [Variant calling and validation](calling.html). We have added regions based on a conservative set of false-positive variants from our datsets and further trinucleotide repeats and softmased regions to this blacklist, since we observed that those tend to contain false positives as well. See the `blacklist` object provided as part of the package.
+The result for patient P1 (`result$P342`) an P2 (`result$HRK`) serves as input into the vignette [Computation of clonal hierarchies and clustering of mutations](clustering.html). The blacklist (`result$blacklist`) serves as input into the vignette [Variant calling and validation](calling.html). We have added regions based on a conservative set of false-positive variants from our datsets and further trinucleotide repeats and softmased regions to this blacklist, since we observed that those tend to contain false positives as well. See the `blacklist` object provided as part of the package.
+
+## Notes on parameter choice
+
+Some notes about possible parameters in the `mutationCallsFromCohort`: By default, we select coordinates in the mitochondrial genome containing at least `MINREADS=5` reads each in at least `MINCELL=20` cells. To distinguish RNA editing events and true mitochondrial mutations, we then identify mitochondrial variants that occur in several individuals. For this purpose only, individual cells are therefore called as 'mutant' in a given genomic site if at least `MINFRAC=10%` of the reads from that cell were from a minor allele (i.e. distinct from the reference). Mutations present in at least `MINRELATIVE.PATIENT=1%` of cells in a given patient, but no more than `MINCELLS.PATIENT=10` cells in any other individual, are then included into the final dataset and counts supporting the reference and mutant alleles are computed as for sites of interest in the nuclear genome. 
+
+Depending on the choice of parameters here, sites with low frequencies of RNA editing or low levels of heteroplasmy in all cells can be included and make the dataset more noisy, in particular if the `MINFRAC` parameter is set too low. On the other hand, a too stringent filtering can cause a loss of potentially informative sites. Hence, we recommend to rather begin with parameters that yield a larger list of sites and then perform the following checks to, manually or through the use of altered filtering parameters, remove erroneous sites:
+
+* Use the `quick_cluster` and the `muta_cluster` functions to check if any potential mutations are randomly distributed and do not follow a hierarchy.
+
+* If data on genomic mutations is available, perform association tests and prioritize mitochondrial variants that are significantly associated with nuclear variants, for example for patient P1 (P342):
+
+```{r get_association, fig.width=6,fig.height=4}
+#retrieve the binary mutation status for nuclear and mitochondrial genomic mutation from read count tables (corresponds to result$P342 , but additionally contains nuclear mutation calls)
+mutations <- mutationCallsFromMatrix(as.matrix(M_P1), as.matrix(N_P1))
+
+
+getasso <- function(m1,m2) {
+      testm <- matrix( data = c(
+        sum(m1 =="1" &m2 == "1"),
+        sum(m1 =="1" &m2 == "0"),
+        sum(m1 == "0" & m2 == "1"),
+        sum(m1 == "0" & m2 == "0")
+      ), ncol = 2  )
+      fisher.test(testm)
+}
+
+
+#run association tests between binary mitochondrial mutation status and binary SRSF2 mutation status
+mitochondrial <- colnames(mutations@ternary)[grep("^X\\d+",colnames(mutations@ternary))]
+tests <- apply(mutations@ternary[,mitochondrial], 2, getasso, m2 = mutations@ternary[,"SRSF2"])
+
+p.val <- sapply(tests, "[[", "p.value")
+est <- sapply(tests, "[[", "estimate")
+plf <- data.frame(name = mitochondrial,
+                  pval = -log10(p.val),
+                  or = est)
+
+library(ggplot2)
+qplot(x = name , y = pval, color = paste0(or <1, pval > 1), data=na.omit(plf)) + coord_flip() + theme_bw()+ theme(panel.grid = element_blank(), axis.title.x = element_text(color="black"), axis.text = element_text(color="black"), axis.text.y = element_text(size = 6)) + xlab("") + ylab("Association w/ SRSF2 mutation (-log10 p)")+ scale_color_manual(values = c("TRUETRUE" = "blue","FALSETRUE" = "red", "FALSEFALSE" = "grey", "TRUEFALSE" = "grey"), guide=F)
+
+
+```
+
+* Finally, some datasets contain cell types that are known to be clonally distinct; in leukemia datasets for example, CD3+ T cells are usually not from the same clone as leukemic cells. Hence, it may make sense to perform association tests between mutational status and cell type to prioritize variants that follow the expected pattern.

@@ -27,6 +27,8 @@ The function `mutationCallsFromBlacklist` performs coverage-based filtering and 
 
 *   `min.num.samples` specifies the minimum number of mutant cells required for a variant to be kept.
 
+As in the case of cohort mutation calling, the choice of these parameters is quite critical. Please see the funal part of the [Variant calling and blacklist creation (using cohort data)](callingCohort.html) vignette for instructions how to set the parameters and/or perform sensibility checks on the results.
+
 ```{r example,fig.width = 6, fig.height=4}
 library(mitoClone)
 library(pheatmap)
@@ -64,7 +66,7 @@ orig.anno <- data.frame(row.names = names(cutree(clustered.hand$tree_col, k=12))
 ```
 
 
-Then, we call mitochondrial variants de novo and cluster using the `muta_cluster` function, as described in more detail in the [Computation of phylogenetic trees and clustering of mutations](clustering.html) vignette.
+Then, we call mitochondrial variants de novo and cluster using the `muta_cluster` function, as described in more detail in the [Computation of clonal hierarchies and clustering of mutations](clustering.html) vignette.
 
 Of note, in this dataset there is quite a large number of variants present in all cells but at low heteroplasmy, justifying the use of a different `universal.var.cells` parameter.
 

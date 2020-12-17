@@ -4,20 +4,15 @@
 \alias{mutationCallsFromMatrix}
 \title{mutationCalls constructor}
 \usage{
-mutationCallsFromMatrix(
-  M,
-  N,
-  cluster = NULL,
-  metadata = data.frame(row.names = rownames(M)),
-  binarize = 0.05
-)
+mutationCallsFromMatrix(M, N, cluster = NULL,
+  metadata = data.frame(row.names = rownames(M)), binarize = 0.05)
 }
 \arguments{
 \item{M}{A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.}
 
 \item{N}{A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.}
 
-\item{cluster}{If \code{NULL}, only mutations with coverage in 20 percent of the cells or more will be used for the clustering, and all other mutations will be used for cluster annotation only. Alternatively, a boolean vector of length \code{ncol(M)} that specifies the desired behavior for each genomic site.}
+\item{cluster}{If \code{NULL}, only mutations with coverage in 20% of the cells or more will be used for the clustering, and all other mutations will be used for cluster annotation only. Alternatively, a boolean vector of length \code{ncol(M)} that specifies the desired behavior for each genomic site.}
 
 \item{binarize}{Allele frequency threshold to define a site as mutant (required for some clustering methods)}
 }

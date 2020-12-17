@@ -192,7 +192,7 @@ summary {
 </div>
 
 
-<p>Once you have identified clones from mitochondrial and known nuclear somatic variants by following the vignette for <a href="clustering.html">Computation of phylogenetic trees and clustering of mutation</a>, you can attempt to identify new mutations from expressed nuclear genes by following this vignette.</p>
+<p>Once you have identified clones from mitochondrial and known nuclear somatic variants by following the vignette for <a href="clustering.html">Computation of clonal hierarchies and clustering of mutations</a>, you can attempt to identify new mutations from expressed nuclear genes by following this vignette.</p>
 <div id="before-you-begin" class="section level2">
 <h2>Before you begin</h2>
 <p>COSMIC is used to restrict the hypothesis space. The first step is therefore to download COSMIC following the instructions provided on <a href="https://cancer.sanger.ac.uk/cosmic/download" class="uri">https://cancer.sanger.ac.uk/cosmic/download</a></p>
@@ -238,7 +238,7 @@ countTables &lt;- mapply(getCounts, positions$chr, positions$pos, MoreArgs = lis
   out
   
 }</code></pre>
-<p>The clonal identity of each cell is obtained by following the <a href="clustering.html">Computation of phylogenetic trees and clustering of mutation</a> vignette for P1.</p>
+<p>The clonal identity of each cell is obtained by following the <a href="clustering.html">Computation of clonal hierarchies and clustering of mutation</a> vignette for P1.</p>
 <pre class="r"><code>clone &lt;- apply(P1@mainClone,1,which.max)</code></pre>
 <p>Finally we define a function that takes the allele count tables as input, performs some further filtering, and then computes the maximum likelihoods of both models by numerical optimization. Again, this takes time and could be parallelized.</p>
 <pre class="r"><code>getAIC &lt;- function(counts, clones) {
