@@ -4,9 +4,16 @@
 \alias{muta_cluster}
 \title{Inference of mutational trees by of single cell mutational status}
 \usage{
-muta_cluster(mutcalls, fn = 0.1, fp = 0.02, cores = 1,
-  time = 10000, tempfolder = tempdir(), python_env = "",
-  force_recalc = F)
+muta_cluster(
+  mutcalls,
+  fn = 0.1,
+  fp = 0.02,
+  cores = 1,
+  time = 10000,
+  tempfolder = tempdir(),
+  python_env = "",
+  force_recalc = F
+)
 }
 \arguments{
 \item{mutcalls}{object of class \code{\link{mutationCalls}}.}

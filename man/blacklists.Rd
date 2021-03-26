@@ -4,12 +4,14 @@
 \name{blacklists}
 \alias{blacklists}
 \title{Mitochondrial blacklist}
-\format{A list with three entries:
+\format{
+A list with three entries:
 #' \itemize{
   \item \emph{three}: Regions of the mitochondrial genome that are within 1 nt of a 3-mer homopolymer (e.g. AAA)
   \item \emph{mutaseq}: Mutations in the mitochondrial genome that were reoccuring across patients (present in more than one individual in the MutaSeq dataset)
   \item \emph{masked}: Regions of the mitochondrial genome that are soft-masked in the UCSC or Ensembl annotations
-}}
+}
+}
 \usage{
 blacklists
 }

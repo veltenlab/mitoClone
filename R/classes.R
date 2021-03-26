@@ -4,7 +4,7 @@
 #'To create this class if you already have the matrices of mutation counts, use its contstructor, i.e. \code{mutationCallsFromMatrix(M = data1, N = data2)}
 #'
 #'@slot M A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.
-#'@slot N A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.
+#'@slot N A matrix of read counts mapping to the \emph{referece} allele. Columns are genomic sites and rows and single cells.
 #'@slot ternary Discretized version describing the mutational status of each gene in each cell, where 1 signfiies mutant, 0 signifies reference, and ? signifies dropout
 #'@slot cluster Boolean vector of length \code{ncol(M)} specifying if the given mutation should be included for clustering (\code{TRUE}) or only used for annotation.
 #'@slot metadata Metadata frame for annotation of single cells (used for plotting). Row names should be the same as in \code{M}
@@ -42,7 +42,7 @@ mutationCalls <- setClass(
 #'
 #'To be used when allele-specific count matrices are available.
 #'@param M A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.
-#'@param N A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.
+#'@param N A matrix of read counts mapping to the \emph{referece} allele. Columns are genomic sites and rows and single cells.
 #'@param cluster If \code{NULL}, only mutations with coverage in 20% of the cells or more will be used for the clustering, and all other mutations will be used for cluster annotation only. Alternatively, a boolean vector of length \code{ncol(M)} that specifies the desired behavior for each genomic site.
 #'@param binarize Allele frequency threshold to define a site as mutant (required for some clustering methods)
 #'@return An object of class \code{\link{mutationCalls}}.

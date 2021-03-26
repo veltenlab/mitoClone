@@ -14,7 +14,7 @@ To create this class if you already have the matrices of mutation counts, use it
 \describe{
 \item{\code{M}}{A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.}
 
-\item{\code{N}}{A matrix of read counts mapping to the \emph{mutant} allele. Columns are genomic sites and rows and single cells.}
+\item{\code{N}}{A matrix of read counts mapping to the \emph{referece} allele. Columns are genomic sites and rows and single cells.}
 
 \item{\code{ternary}}{Discretized version describing the mutational status of each gene in each cell, where 1 signfiies mutant, 0 signifies reference, and ? signifies dropout}
 

@@ -4,11 +4,18 @@
 \alias{mutationCallsFromBlacklist}
 \title{Create a mutationCalls object from nucleotide base calls using a blacklist (single individual)}
 \usage{
-mutationCallsFromBlacklist(BaseCounts, lim.cov = 20, min.af = 0.2,
+mutationCallsFromBlacklist(
+  BaseCounts,
+  lim.cov = 20,
+  min.af = 0.2,
   min.num.samples = 0.01 * length(BaseCounts),
-  min.af.universal = min.af, universal.var.cells = 0.95 *
-  length(BaseCounts), blacklists.use = blacklists, max.var.na = 0.5,
-  max.cell.na = 0.95, ...)
+  min.af.universal = min.af,
+  universal.var.cells = 0.95 * length(BaseCounts),
+  blacklists.use = blacklists,
+  max.var.na = 0.5,
+  max.cell.na = 0.95,
+  ...
+)
 }
 \arguments{
 \item{BaseCounts}{A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromBamList}}}

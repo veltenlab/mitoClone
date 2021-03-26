@@ -4,9 +4,16 @@
 \alias{mutationCallsFromCohort}
 \title{Create a mutationCalls objects from nucleotide base calls and defines a blacklist (cohort)}
 \usage{
-mutationCallsFromCohort(BaseCounts, patient, MINREADS = 5,
-  MINCELL = 20, MINFRAC = 0.1, MINCELLS.PATIENT = 10,
-  MINRELATIVE.PATIENT = 0.01, MINRELATIVE.OTHER = 0.1)
+mutationCallsFromCohort(
+  BaseCounts,
+  patient,
+  MINREADS = 5,
+  MINCELL = 20,
+  MINFRAC = 0.1,
+  MINCELLS.PATIENT = 10,
+  MINRELATIVE.PATIENT = 0.01,
+  MINRELATIVE.OTHER = 0.1
+)
 }
 \arguments{
 \item{BaseCounts}{A list of base call matrices (one matrix per cell) as produced by \code{\link{baseCountsFromSingleBam}} or \code{\link{baseCountsFromBamList}}}
