@@ -4,15 +4,19 @@
 #'@param bamfiles A character vector specifying the bam file paths
 #'@param sites Vector specifying genomic regions, defaults to the entire mitochondrial genome.
 #'@param ncores Number of threads to use for the computation
+#'@param ignore_nonstandard Ignore basecalls that are not AGCTN
 #'@return A list of base count matrices which can serve as an input to \code{\link{mutationCallsFromBlacklist}} or \code{\link{mutationCallsFromCohort}}
 #'@export
-baseCountsFromBamList <- function(bamfiles, sites = "chrM:1-16659", ncores=20) {
+baseCountsFromBamList <- function(bamfiles, sites = "chrM:1-16569", ncores=20, ignore_nonstandard=FALSE) {
     mito.chr <- GRanges(sites)
     mc.out <- parallel:::mclapply(bamfiles, function(bampath){
         bam.file <- deepSNV:::bam2R(bampath, chr = GenomeInfoDb:::seqnames(mito.chr),start = BiocGenerics:::start(mito.chr), stop = BiocGenerics:::end(mito.chr))
         bam.file.sub <- bam.file[,12:19]
         bam.file <- bam.file[,1:8]
         bam.file <- bam.file + bam.file.sub
+        if(ignore_nonstandard){
+            bam.file <- bam.file[,c('A','T','C','G','N')]
+        }
         return(bam.file)
     },mc.cores=ncores)
     names(mc.out) <- names(bamfiles)
